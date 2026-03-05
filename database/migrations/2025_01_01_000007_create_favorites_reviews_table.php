@@ -55,7 +55,6 @@ return new class extends Migration {
 
         Schema::create('banners', function (Blueprint $table) {
             $table->id();
-            $table->string('title')->nullable();
             $table->string('image_path');
 
             $table->enum('link_type', ['offer', 'provider', 'category', 'external'])->default('external');

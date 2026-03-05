@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
-class User extends Authenticatable implements MustVerifyEmail
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+class User extends Authenticatable implements MustVerifyEmail,FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -38,6 +39,10 @@ class User extends Authenticatable implements MustVerifyEmail
         'role' => 'string',
         'is_active' => 'boolean'
     ];
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->isAdmin();
+    }
 
     public function parentUser()
     {
@@ -121,7 +126,7 @@ class User extends Authenticatable implements MustVerifyEmail
     // Check if user is admin
     public function isAdmin()
     {
-        return $this->role === 'admin';
+        return $this->role === 'admin' || $this->role === 'super_admin';
     }
 
     // Check if user is active

@@ -10,7 +10,6 @@ class Banner extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
         'image_path',
         'link_type',
         'link_id',
@@ -29,6 +28,37 @@ class Banner extends Model
         'is_active' => 'boolean',
         'sort_order' => 'integer'
     ];
+
+    // Translations relationship
+    public function translations()
+    {
+        return $this->hasMany(BannerTranslation::class);
+    }
+
+    // Get translation for current locale
+    public function translation($locale = null)
+    {
+        $locale = $locale ?? app()->getLocale();
+        return $this->translations()->where('local', $locale)->first();
+    }
+
+    // Get title in current locale
+    public function getTitleAttribute()
+    {
+        return $this->translation()?->title ?? $this->attributes['title'];
+    }
+
+    // Get all translations
+    public function getAllTranslations()
+    {
+        return $this->translations()->pluck('title', 'local');
+    }
+
+    // Get banner image URL
+    public function getImageUrlAttribute()
+    {
+        return $this->image_path ? asset('storage/' . $this->image_path) : null;
+    }
 
     // Get link URL
     public function getLinkUrlAttribute()

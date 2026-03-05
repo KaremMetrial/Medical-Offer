@@ -62,13 +62,45 @@ class BannerSeeder extends Seeder
         ];
 
         foreach ($banners as $bannerData) {
-            Banner::updateOrCreate(
+            $banner = Banner::firstOrCreate(
                 [
-                    'title' => $bannerData['title'],
                     'position' => $bannerData['position']
                 ],
-                $bannerData
+                [
+                    'image_path' => $bannerData['image_path'],
+                    'link_type' => $bannerData['link_type'],
+                    'link_id' => $bannerData['link_id'],
+                    'external_url' => $bannerData['external_url'],
+                    'start_date' => $bannerData['start_date'],
+                    'end_date' => $bannerData['end_date'],
+                    'is_active' => $bannerData['is_active'],
+                    'sort_order' => $bannerData['sort_order']
+                ]
+            );
+
+            // Create Arabic translation
+            $banner->translations()->updateOrCreate(
+                ['local' => 'ar'],
+                ['title' => $bannerData['title']]
+            );
+
+            // Create English translation
+            $banner->translations()->updateOrCreate(
+                ['local' => 'en'],
+                ['title' => $this->getEnglishTitle($bannerData['title'])]
             );
         }
+    }
+
+    private function getEnglishTitle($arabicTitle)
+    {
+        $translations = [
+            'عروض الربيع المميزة' => 'Special Spring Offers',
+            'فحص طبي مجاني' => 'Free Medical Checkup',
+            'خصومات الصيف' => 'Summer Discounts',
+            'خدمات طبية متكاملة' => 'Comprehensive Medical Services'
+        ];
+
+        return $translations[$arabicTitle] ?? $arabicTitle;
     }
 }
