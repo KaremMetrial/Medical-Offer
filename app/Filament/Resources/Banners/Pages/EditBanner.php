@@ -8,6 +8,8 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditBanner extends EditRecord
 {
+    use \App\Filament\Traits\TranslatesRecordOnEdit;
+
     protected static string $resource = BannerResource::class;
 
     protected function getHeaderActions(): array
@@ -15,5 +17,10 @@ class EditBanner extends EditRecord
         return [
             DeleteAction::make(),
         ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

@@ -55,23 +55,23 @@ class Provider extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_provider')
-                    ->withPivot('branch_id')
-                    ->withTimestamps();
+            ->withPivot('branch_id')
+            ->withTimestamps();
     }
 
     public function branchUsers()
     {
         return $this->belongsToMany(User::class, 'user_provider')
-                    ->wherePivotNotNull('branch_id')
-                    ->withPivot('branch_id')
-                    ->withTimestamps();
+            ->wherePivotNotNull('branch_id')
+            ->withPivot('branch_id')
+            ->withTimestamps();
     }
 
     public function mainUsers()
     {
         return $this->belongsToMany(User::class, 'user_provider')
-                    ->wherePivotNull('branch_id')
-                    ->withTimestamps();
+            ->wherePivotNull('branch_id')
+            ->withTimestamps();
     }
 
     // Get users who can manage specific branch
@@ -96,7 +96,8 @@ class Provider extends Model
     public function translation($locale = null)
     {
         $locale = $locale ?? app()->getLocale();
-        return $this->translations()->where('local', $locale)->first();
+        return $this->translations()->where('local', $locale)->first()
+            ?? $this->translations()->first();
     }
 
     public function getNameAttribute()

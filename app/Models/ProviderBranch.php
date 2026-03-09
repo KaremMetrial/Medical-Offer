@@ -65,8 +65,8 @@ class ProviderBranch extends Model
     public function users()
     {
         return $this->belongsToMany(User::class, 'user_provider')
-                    ->withPivot('provider_id')
-                    ->withTimestamps();
+            ->withPivot('provider_id')
+            ->withTimestamps();
     }
 
     public function providerUsers()
@@ -104,6 +104,12 @@ class ProviderBranch extends Model
         }
 
         return implode(', ', array_filter($parts));
+    }
+
+    public function getNameAttribute()
+    {
+        $locale = app()->getLocale();
+        return $locale === 'ar' ? ($this->name_ar ?? $this->name_en) : ($this->name_en ?? $this->name_ar);
     }
 
     // Check if branch is active

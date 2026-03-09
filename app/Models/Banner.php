@@ -39,13 +39,14 @@ class Banner extends Model
     public function translation($locale = null)
     {
         $locale = $locale ?? app()->getLocale();
-        return $this->translations()->where('local', $locale)->first();
+        return $this->translations()->where('local', $locale)->first()
+            ?? $this->translations()->first();
     }
 
     // Get title in current locale
     public function getTitleAttribute()
     {
-        return $this->translation()?->title ?? $this->attributes['title'];
+        return $this->translation()?->title;
     }
 
     // Get all translations
@@ -80,7 +81,14 @@ class Banner extends Model
     public function isActive()
     {
         return $this->is_active &&
-               $this->start_date <= now() &&
-               $this->end_date >= now();
+            $this->start_date <= now() &&
+            $this->end_date >= now();
+    }
+
+    public function scopeSearchTitle($query, $search)
+    {
+        return $query->whereHas('translations', function ($q) use ($search) {
+            $q->where('title', 'like', '%' . $search . '%');
+        });
     }
 }

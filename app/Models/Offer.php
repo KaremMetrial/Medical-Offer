@@ -86,7 +86,8 @@ class Offer extends Model
     public function translation($locale = null)
     {
         $locale = $locale ?? app()->getLocale();
-        return $this->translations()->where('local', $locale)->first();
+        return $this->translations()->where('local', $locale)->first()
+            ?? $this->translations()->first();
     }
 
     public function getNameAttribute()
@@ -114,8 +115,8 @@ class Offer extends Model
     public function isActive()
     {
         return $this->status === 'published' &&
-               $this->start_date <= now() &&
-               $this->end_date >= now();
+            $this->start_date <= now() &&
+            $this->end_date >= now();
     }
 
     // Check if offer is expired
@@ -129,5 +130,11 @@ class Offer extends Model
     {
         $planDiscount = $this->planDiscounts()->where('plan_id', $planId)->first();
         return $planDiscount ? $planDiscount->discount_percent : $this->discount_percent;
+    }
+    public function scopeSearchName($query, $search)
+    {
+        return $query->whereHas('translations', function ($q) use ($search) {
+            $q->where('name', 'like', '%' . $search . '%');
+        });
     }
 }

@@ -14,7 +14,8 @@ class MemberPlan extends Model
         'duration_days',
         'features_json',
         'is_active',
-        'is_provider'
+        'is_provider',
+        'country_id',
     ];
 
     protected $casts = [
@@ -22,12 +23,18 @@ class MemberPlan extends Model
         'duration_days' => 'integer',
         'features_json' => 'array',
         'is_active' => 'boolean',
-        'is_provider' => 'boolean'
+        'is_provider' => 'boolean',
+        'country_id' => 'integer',
     ];
 
     public function translations()
     {
-        return $this->hasMany(PlanTranslation::class);
+        return $this->hasMany(PlanTranslation::class, 'plan_id');
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
     }
 
     public function subscriptions()
@@ -44,7 +51,8 @@ class MemberPlan extends Model
     public function translation($locale = null)
     {
         $locale = $locale ?? app()->getLocale();
-        return $this->translations()->where('local', $locale)->first();
+        return $this->translations()->where('local', $locale)->first()
+            ?? $this->translations()->first();
     }
 
     public function getNameAttribute()
@@ -61,5 +69,11 @@ class MemberPlan extends Model
     public function hasFeature($feature)
     {
         return in_array($feature, $this->features_json ?? []);
+    }
+    public function scopeSearchName($query, $search)
+    {
+        return $query->whereHas('translations', function ($q) use ($search) {
+            $q->where('name', 'like', '%' . $search . '%');
+        });
     }
 }

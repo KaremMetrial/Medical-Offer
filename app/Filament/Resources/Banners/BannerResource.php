@@ -18,9 +18,26 @@ class BannerResource extends Resource
 {
     protected static ?string $model = Banner::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedPhoto;
 
-    protected static ?string $recordTitleAttribute = 'Banner';
+    protected static ?string $recordTitleAttribute = 'title';
+
+    public static function getNavigationGroup(): ?string
+    {
+        return __('filament.nav.group.cms');
+    }
+
+    protected static ?int $navigationSort = 1;
+
+    public static function getModelLabel(): string
+    {
+        return __('filament.banner.label');
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return __('filament.banner.plural_label');
+    }
 
     public static function form(Schema $schema): Schema
     {

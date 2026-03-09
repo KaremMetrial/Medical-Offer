@@ -58,7 +58,8 @@ class Category extends Model
     public function translation($locale = null)
     {
         $locale = $locale ?? app()->getLocale();
-        return $this->translations()->where('local', $locale)->first();
+        return $this->translations()->where('local', $locale)->first()
+            ?? $this->translations()->first();
     }
 
     public function getNameAttribute()
@@ -76,5 +77,11 @@ class Category extends Model
     public function parents()
     {
         return $this->parent()->with('parents');
+    }
+    public function scopeSearchName($query, $search)
+    {
+        return $query->whereHas('translations', function ($q) use ($search) {
+            $q->where('name', 'like', '%' . $search . '%');
+        });
     }
 }
