@@ -1,0 +1,143 @@
+{
+    "info": {
+        "_postman_id": "4b971da2-9f37-4c12-9b2f-923f03b5f7ac",
+        "name": "Medical Offer API",
+        "description": "API Collection for Medical Offer application, including Authentication.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "1. Send OTP",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"phone\": \"0123456789\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/send-otp",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "send-otp"]
+                        },
+                        "description": "Request an OTP for a given phone number. Rate limited to 6 requests per minute."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "2. Verify OTP",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"phone\": \"0123456789\",\n    \"otp\": \"123456\"\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/verify-otp",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "verify-otp"]
+                        },
+                        "description": "Verify the OTP. If the user is registered, returns a token. If not, returns registered: false."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "3. Register",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"John Doe\",\n    \"phone\": \"0123456789\",\n    \"email\": \"john@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"country_id\": 1,\n    \"city_id\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/auth/register",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "auth", "register"]
+                        },
+                        "description": "Complete registration for a verified phone number. Only applicable if Verify OTP returned registered: false."
+                    },
+                    "response": []
+                },
+                {
+                    "name": "4. Get Authenticated User",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/user",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "user"]
+                        },
+                        "description": "Fetch the currently authenticated user's details using the Sanctum token."
+                    },
+                    "response": []
+                }
+            ],
+            "description": "Endpoints related to user authentication and OTP verification."
+        }
+    ],
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://127.0.0.1:8000"
+        },
+        {
+            "key": "auth_token",
+            "value": "your_token_here"
+        }
+    ]
+}

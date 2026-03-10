@@ -47,6 +47,11 @@ trait TranslatesRecordOnEdit
 
             if (method_exists($record, 'translations') && !empty($translations)) {
                 foreach ($translations as $locale => $fields) {
+                    // Skip if name is provided but empty, or if all fields are empty
+                    if ((isset($fields['name']) && empty($fields['name'])) || collect($fields)->every(fn($value) => is_null($value) || $value === '')) {
+                        continue;
+                    }
+
                     $record->translations()->updateOrCreate(
                         ['local' => $locale],
                         $fields

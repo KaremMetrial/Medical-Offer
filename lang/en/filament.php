@@ -59,6 +59,7 @@ return [
         'media' => 'Media',
         'settings' => 'Settings',
         'general' => 'General Information',
+        'categories' => 'Categories',
     ],
     'fields' => [
         'title' => 'Title',
@@ -125,6 +126,7 @@ return [
         'phone' => 'Phone',
         'role' => 'Role',
         'password' => 'Password',
+        'offer' => 'Offer',
     ],
     'nav' => [
         'group' => [
@@ -136,6 +138,7 @@ return [
         ],
     ],
     'options' => [
+        'all' => 'All',
         'offer' => 'Offer',
         'provider' => 'Provider',
         'category' => 'Category',

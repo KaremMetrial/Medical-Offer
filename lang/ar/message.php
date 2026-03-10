@@ -1,0 +1,18 @@
+<?php
+
+return [
+    'page_not_found'    => 'الصفحة غير موجودة.',
+    'record_not_found'  => 'السجل المطلوب غير موجود.',
+    'method_not_allowed' => 'طريقة الطلب غير مسموح بها لهذا المسار.',
+    'validation_failed' => 'البيانات المدخلة غير صالحة.',
+    'access_forbidden'  => 'ليس لديك إذن للوصول إلى هذا المورد.',
+    'access_denied'     => 'تم رفض الوصول.',
+    'rate_limit_exceeded' => 'عدد كبير جداً من الطلبات. يرجى المحاولة لاحقاً.',
+    'database_error'    => 'حدث خطأ في قاعدة البيانات. يرجى المحاولة لاحقاً.',
+    'otp_sent_successfully' => 'تم إرسال رمز التحقق بنجاح.',
+    'invalid_otp'       => 'رمز التحقق المدخل غير صحيح أو منتهي الصلاحية.',
+    'please_complete_registration' => 'تم التحقق بنجاح، يرجى إكمال التسجيل.',
+    'user_not_found'    => 'لم يتم العثور على سجل العضو.',
+    'login_successfully' => 'تم تسجيل الدخول بنجاح.',
+    'registration_successfully' => 'تم التسجيل بنجاح.',
+];

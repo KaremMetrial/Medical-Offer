@@ -9,7 +9,8 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
-class User extends Authenticatable implements MustVerifyEmail,FilamentUser
+
+class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -22,6 +23,9 @@ class User extends Authenticatable implements MustVerifyEmail,FilamentUser
         'otp_expired_at',
         'avatar',
         'role',
+        'country_id',
+        'governorate_id',
+        'city_id',
         'parent_user_id',
         'is_active'
     ];
@@ -37,11 +41,29 @@ class User extends Authenticatable implements MustVerifyEmail,FilamentUser
         'otp_expired_at' => 'datetime',
         'password' => 'hashed',
         'role' => 'string',
+        'country_id' => 'integer',
+        'governorate_id' => 'integer',
+        'city_id' => 'integer',
         'is_active' => 'boolean'
     ];
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->isAdmin();
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    public function governorate()
+    {
+        return $this->belongsTo(Governorate::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
     }
 
     public function parentUser()
@@ -82,15 +104,15 @@ class User extends Authenticatable implements MustVerifyEmail,FilamentUser
     public function providers()
     {
         return $this->belongsToMany(Provider::class, 'user_provider')
-                    ->withPivot('branch_id')
-                    ->withTimestamps();
+            ->withPivot('branch_id')
+            ->withTimestamps();
     }
 
     public function branches()
     {
         return $this->belongsToMany(ProviderBranch::class, 'user_provider')
-                    ->withPivot('provider_id')
-                    ->withTimestamps();
+            ->withPivot('provider_id')
+            ->withTimestamps();
     }
 
     // Check if user is provider role
@@ -163,8 +185,13 @@ class User extends Authenticatable implements MustVerifyEmail,FilamentUser
     public function isOtpValid($otp)
     {
         return $this->otp_hash &&
-               $this->otp_expired_at &&
-               $this->otp_expired_at > now() &&
-               password_verify($otp, $this->otp_hash);
+            $this->otp_expired_at &&
+            $this->otp_expired_at > now() &&
+            password_verify($otp, $this->otp_hash);
+    }
+
+    public function getAvatarUrlAttribute(): ?string
+    {
+        return $this->avatar ? asset('storage/' . $this->avatar) : null;
     }
 }

@@ -8,6 +8,8 @@ use Filament\Resources\Pages\EditRecord;
 
 class EditProviderBranch extends EditRecord
 {
+    use \App\Filament\Traits\TranslatesRecordOnEdit;
+
     protected static string $resource = ProviderBranchResource::class;
 
     protected function getHeaderActions(): array

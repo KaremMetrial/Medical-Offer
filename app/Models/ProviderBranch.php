@@ -14,8 +14,6 @@ class ProviderBranch extends Model
         'country_id',
         'governorate_id',
         'city_id',
-        'name_ar',
-        'name_en',
         'address',
         'lat',
         'lng',
@@ -36,6 +34,11 @@ class ProviderBranch extends Model
         'is_main' => 'boolean',
         'is_active' => 'boolean'
     ];
+
+    public function translations()
+    {
+        return $this->hasMany(ProviderBranchTranslation::class);
+    }
 
     public function provider()
     {
@@ -86,6 +89,14 @@ class ProviderBranch extends Model
         return $this->users()->where('branch_id', $this->id);
     }
 
+    // Helper method to get translation
+    public function translation($locale = null)
+    {
+        $locale = $locale ?? app()->getLocale();
+        return $this->translations()->where('local', $locale)->first()
+            ?? $this->translations()->first();
+    }
+
     // Get full address
     public function getFullAddressAttribute()
     {
@@ -108,8 +119,14 @@ class ProviderBranch extends Model
 
     public function getNameAttribute()
     {
-        $locale = app()->getLocale();
-        return $locale === 'ar' ? ($this->name_ar ?? $this->name_en) : ($this->name_en ?? $this->name_ar);
+        return $this->translation()?->name;
+    }
+
+    public function scopeSearchName($query, $search)
+    {
+        return $query->whereHas('translations', function ($q) use ($search) {
+            $q->where('name', 'like', '%' . $search . '%');
+        });
     }
 
     // Check if branch is active

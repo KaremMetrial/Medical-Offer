@@ -24,10 +24,14 @@ class MemberPlansTable
                         return $query->searchName($search);
                     }),
 
-                                TextColumn::make('country.name')
+                TextColumn::make('country.name')
                     ->label(__('filament.fields.country'))
                     ->sortable()
-                    ->searchable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('country', function ($q) use ($search) {
+                            $q->searchName($search);
+                        });
+                    })
                     ->default('-'),
 
                 TextColumn::make('price')

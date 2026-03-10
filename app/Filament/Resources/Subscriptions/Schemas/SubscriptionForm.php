@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\Subscriptions\Schemas;
 
+use App\Models\MemberPlan;
+use App\Models\User;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\DatePicker;
 use Filament\Schemas\Schema;
@@ -19,13 +21,12 @@ class SubscriptionForm
                         ->schema([
                             Select::make('user_id')
                                 ->label(__('filament.fields.user'))
-                                ->relationship('user', 'name')
+                                ->options(fn() => User::where('is_active', true)->whereNotIn('role', ['admin', 'super_admin'])->get()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),
                             Select::make('plan_id')
                                 ->label(__('filament.fields.plan'))
-                                ->relationship('plan', 'id')
-                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => MemberPlan::with('translations')->get()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),
                         ])->columns(2),

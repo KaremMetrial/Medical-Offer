@@ -7,6 +7,8 @@ use Filament\Resources\Pages\CreateRecord;
 
 class CreateProviderBranch extends CreateRecord
 {
+    use \App\Filament\Traits\TranslatesRecordOnCreate;
+
     protected static string $resource = ProviderBranchResource::class;
 
     protected function getRedirectUrl(): string

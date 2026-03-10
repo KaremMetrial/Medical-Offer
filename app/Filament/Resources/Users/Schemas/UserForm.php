@@ -10,6 +10,9 @@ use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Group;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Country;
+use App\Models\Governorate;
+use App\Models\City;
 
 class UserForm
 {
@@ -32,6 +35,24 @@ class UserForm
                                 ->label(__('filament.fields.phone'))
                                 ->tel(),
                         ])->columns(2),
+
+                    Section::make(__('filament.fields.address'))
+                        ->schema([
+                            Select::make('country_id')
+                                ->label(__('filament.fields.country'))
+                                ->options(fn() => Country::with('translations')->get()->pluck('name', 'id'))
+                                ->searchable()
+                                ->live(),
+                            Select::make('governorate_id')
+                                ->label(__('filament.fields.governorate'))
+                                ->options(fn(callable $get) => Governorate::where('country_id', $get('country_id'))->with('translations')->get()->pluck('name', 'id'))
+                                ->searchable()
+                                ->live(),
+                            Select::make('city_id')
+                                ->label(__('filament.fields.city'))
+                                ->options(fn(callable $get) => City::where('governorate_id', $get('governorate_id'))->with('translations')->get()->pluck('name', 'id'))
+                                ->searchable(),
+                        ])->columns(3),
 
                     Section::make(__('filament.fields.password'))
                         ->schema([

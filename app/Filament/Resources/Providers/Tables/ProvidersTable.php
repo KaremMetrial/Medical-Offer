@@ -9,18 +9,20 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-
+use Illuminate\Database\Eloquent\Builder;
 class ProvidersTable
 {
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(\Illuminate\Database\Eloquent\Builder $query) => $query->with(['translations', 'country.translations']))
+            ->modifyQueryUsing(fn(Builder $query) => $query->with(['translations', 'country.translations']))
             ->columns([
                 TextColumn::make('name')
                     ->label(__('filament.fields.name'))
                     ->sortable()
-                    ->searchable(),
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->searchName($search);
+                    }),
 
                 ImageColumn::make('logo')
                     ->label(__('filament.fields.logo'))
@@ -32,7 +34,12 @@ class ProvidersTable
 
                 TextColumn::make('country.name')
                     ->label(__('filament.fields.country'))
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query->whereHas('country', function ($q) use ($search) {
+                            $q->searchName($search);
+                        });
+                    }),
 
                 TextColumn::make('status')
                     ->label(__('filament.fields.status'))
@@ -41,7 +48,7 @@ class ProvidersTable
                     ->color(fn(string $state): string => match ($state) {
                         'pending' => 'warning',
                         'active' => 'success',
-                        'inactive' => 'danger',
+                        'suspended' => 'danger',
                         default => 'gray',
                     }),
 

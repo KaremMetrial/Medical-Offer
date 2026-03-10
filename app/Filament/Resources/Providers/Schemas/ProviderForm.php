@@ -11,6 +11,7 @@ use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Group;
 use App\Filament\Components\TranslatableFields;
+use App\Models\Category;
 use App\Models\Country;
 
 class ProviderForm
@@ -54,12 +55,13 @@ class ProviderForm
                                 ->label(__('filament.fields.country'))
                                 ->relationship('country', 'id')
                                 ->getOptionLabelFromRecordUsing(fn(Country $record) => $record->name)
+                                ->options(fn() => Country::with('translations')->get()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),
                             Select::make('categories')
                                 ->label(__('filament.sections.categories'))
                                 ->relationship('categories', 'id')
-                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->getOptionLabelFromRecordUsing(fn(Category $record) => $record->name)
                                 ->multiple()
                                 ->preload(),
                         ])->columns(2),
@@ -82,7 +84,11 @@ class ProviderForm
                         ->schema([
                             Select::make('status')
                                 ->label(__('filament.fields.status'))
-                                ->options(__('filament.options.status'))
+                                ->options([
+                                    'pending' => 'Pending',
+                                    'active' => 'Active',
+                                    'suspended' => 'Suspended',
+                                ])
                                 ->default('pending')
                                 ->required(),
                             Toggle::make('is_varified')

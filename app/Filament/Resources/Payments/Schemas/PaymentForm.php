@@ -7,6 +7,9 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Group;
+use App\Models\Provider;
+use App\Models\User;
+use App\Models\Subscription;
 
 class PaymentForm
 {
@@ -17,18 +20,39 @@ class PaymentForm
                 Group::make([
                     Section::make(__('filament.sections.general'))
                         ->schema([
-                            TextInput::make('payable_type')
+                            Select::make('payable_type')
                                 ->label('Payable Type')
+                                ->options([
+                                    User::class => 'User',
+                                    Subscription::class => 'Subscription',
+                                ])
+                                ->live()
                                 ->required(),
-                            TextInput::make('payable_id')
+                            Select::make('payable_id')
                                 ->label('Payable ID')
-                                ->numeric()
+                                ->options(function ($get) {
+                                    $type = $get('payable_type');
+                                    if ($type === User::class) {
+                                        return User::pluck('name', 'id');
+                                    }
+                                    if ($type === Subscription::class) {
+                                        return Subscription::with(['user', 'plan.translations'])
+                                            ->get()
+                                            ->mapWithKeys(function ($subscription) {
+                                                $userName = $subscription->user?->name ?? 'Unknown';
+                                                $planName = $subscription->plan?->name ?? 'Unknown Plan';
+                                                return [$subscription->id => "{$userName} - {$planName} (#{$subscription->id})"];
+                                            });
+                                    }
+                                    return [];
+                                })
+                                ->searchable()
                                 ->required(),
                             Select::make('provider_id')
                                 ->label(__('filament.fields.provider'))
-                                ->relationship('provider', 'id')
-                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
-                                ->searchable(),
+                                ->options(fn() => Provider::with('translations')->get()->pluck('name', 'id'))
+                                ->searchable()
+                                ->live(),
                         ])->columns(3),
 
                     Section::make(__('filament.sections.settings'))
@@ -36,7 +60,14 @@ class PaymentForm
                             TextInput::make('amount')
                                 ->label(__('filament.fields.amount'))
                                 ->numeric()
-                                ->prefix('$')
+                                ->prefix(function ($get) {
+                                    $providerId = $get('provider_id');
+                                    if ($providerId) {
+                                        $provider = Provider::with('country')->find($providerId);
+                                        return $provider?->country?->currency_symbol ?? '$';
+                                    }
+                                    return '$';
+                                })
                                 ->required(),
                             TextInput::make('method')
                                 ->label(__('filament.fields.method'))

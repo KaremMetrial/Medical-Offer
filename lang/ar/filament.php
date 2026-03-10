@@ -59,6 +59,7 @@ return [
         'media' => 'الوسائط',
         'settings' => 'الإعدادات',
         'general' => 'معلومات عامة',
+        'categories' => 'الأقسام',
     ],
     'fields' => [
         'title' => 'العنوان',
@@ -125,6 +126,7 @@ return [
         'phone' => 'الهاتف',
         'role' => 'الدور',
         'password' => 'كلمة المرور',
+        'offer' => 'عرض'    
     ],
     'nav' => [
         'group' => [
@@ -136,6 +138,7 @@ return [
         ],
     ],
     'options' => [
+        'all' => 'الكل',
         'offer' => 'عرض',
         'provider' => 'مزود الخدمة',
         'category' => 'القسم',

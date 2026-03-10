@@ -2,17 +2,18 @@
 
 namespace App\Filament\Resources\Offers\Schemas;
 
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\Repeater;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Group;
 use App\Filament\Components\TranslatableFields;
-
+use Filament\Forms\Components\FileUpload;
+use App\Models\Provider;
+use App\Models\Category;
 class OfferForm
 {
     public static function configure(Schema $schema): Schema
@@ -46,13 +47,12 @@ class OfferForm
                             Select::make('provider_id')
                                 ->label(__('filament.fields.provider'))
                                 ->relationship('provider', 'id')
-                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => Provider::get()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),
                             Select::make('category_id')
                                 ->label(__('filament.fields.category'))
-                                ->relationship('category', 'id')
-                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => Category::get()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),
                             TextInput::make('discount_percent')
@@ -66,11 +66,19 @@ class OfferForm
                 Group::make([
                     Section::make(__('filament.sections.media'))
                         ->schema([
-                            FileUpload::make('images')
+                            Repeater::make('images')
                                 ->label(__('filament.sections.media'))
-                                ->multiple()
-                                ->directory('offers/images')
-                                ->relationship('images', 'path'),
+                                ->relationship('images')
+                                ->schema([
+                                    FileUpload::make('path')
+                                        ->label(__('filament.fields.image'))
+                                        ->image()
+                                        ->directory('offers/images')
+                                        ->required(),
+                                ])
+                                ->orderColumn('sort_order')
+                                ->grid(2)
+                                ->columnSpanFull(),
                         ]),
 
                     Section::make(__('filament.sections.settings'))

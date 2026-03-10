@@ -126,4 +126,10 @@ class Provider extends Model
     {
         return $this->status === 'active' && $this->is_varified;
     }
+    public function scopeSearchName($query, $search)
+    {
+        return $query->whereHas('translations', function ($q) use ($search) {
+            $q->where('name', 'like', '%' . $search . '%');
+        });
+    }
 }
