@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -23,6 +24,12 @@ class OffersTable
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query->searchName($search);
                     }),
+
+                ImageColumn::make('images.path')
+                    ->label(__('filament.fields.image'))
+                    ->disk('public')
+                    ->limit(1)
+                    ->circular(),
 
                 TextColumn::make('provider.name')
                     ->label(__('filament.fields.provider'))

@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
@@ -192,6 +193,20 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 
     public function getAvatarUrlAttribute(): ?string
     {
-        return $this->avatar ? asset('storage/' . $this->avatar) : null;
+        return $this->avatar ? Storage::disk('public')->url($this->avatar) : asset('storage/users/avatars/avatar.jpg');
+    }
+
+    public function getImagePathAttribute(): ?string
+    {
+        return $this->avatar;
+    }
+
+    public function getSrcAttribute(): ?string
+    {
+        return $this->getAvatarUrlAttribute();
+    }
+    public function unreadNotificationsCount(): int
+    {
+        return $this->notifications()->where('read_at', null)->count() ?? 0;
     }
 }

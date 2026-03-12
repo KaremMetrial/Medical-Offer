@@ -13,8 +13,12 @@ use Filament\Schemas\Components\Group;
 use App\Filament\Components\TranslatableFields;
 use App\Models\Category;
 
+use App\Traits\UploadTrait;
+
 class CategoryForm
 {
+    use UploadTrait;
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -52,6 +56,8 @@ class CategoryForm
                             FileUpload::make('icon')
                                 ->label(__('filament.fields.icon'))
                                 ->image()
+                                ->disk('public')
+                                ->directory('categories')
                                 ->hiddenLabel(),
                         ]),
 

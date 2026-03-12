@@ -61,6 +61,11 @@ class Banner extends Model
         return $this->image_path ? asset('storage/' . $this->image_path) : null;
     }
 
+    public function getSrcAttribute()
+    {
+        return $this->getImageUrlAttribute();
+    }
+
     // Get link URL
     public function getLinkUrlAttribute()
     {

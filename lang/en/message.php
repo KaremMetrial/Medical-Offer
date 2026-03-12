@@ -15,4 +15,5 @@ return [
     'user_not_found'    => 'User record not found.',
     'login_successfully' => 'Logged in successfully.',
     'registration_successfully' => 'Registration completed successfully.',
+    'something_went_wrong' => 'Something went wrong. Please try again.'
 ];

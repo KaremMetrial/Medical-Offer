@@ -67,10 +67,27 @@ class Country extends Model
     {
         return $this->translation()?->name;
     }
+    public function stories()
+    {
+        return $this->belongsToMany(Story::class, 'country_story');
+    }
     public function scopeSearchName($query, $search)
     {
         return $query->whereHas('translations', function ($q) use ($search) {
             $q->where('name', 'like', '%' . $search . '%');
         });
+    }
+    public function getFlagUrlAttribute(): ?string
+    {
+        return $this->flag ? asset('storage/' . $this->flag) : null;
+    }
+    public function getImagePathAttribute(): ?string
+    {
+        return $this->flag;
+    }
+
+    public function getSrcAttribute(): ?string
+    {
+        return $this->flag ? asset('storage/' . $this->flag) : null;
     }
 }

@@ -57,7 +57,13 @@ class AuthController extends BaseController
      */
     public function register(RegisterRequest $request): JsonResponse
     {
-        $result = $this->authService->register($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('avatar')) {
+            $data['avatar'] = $this->storeImage($request->file('avatar'), 'users/avatars');
+        }
+
+        $result = $this->authService->register($data);
 
         if (isset($result['user'])) {
             $result['user'] = new UserResource($result['user']);

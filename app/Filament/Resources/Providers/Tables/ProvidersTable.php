@@ -10,6 +10,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+
 class ProvidersTable
 {
     public static function configure(Table $table): Table
@@ -26,6 +27,7 @@ class ProvidersTable
 
                 ImageColumn::make('logo')
                     ->label(__('filament.fields.logo'))
+                    ->disk('public')
                     ->circular(),
 
                 TextColumn::make('phone')

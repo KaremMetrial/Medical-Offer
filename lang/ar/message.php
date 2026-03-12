@@ -15,4 +15,5 @@ return [
     'user_not_found'    => 'لم يتم العثور على سجل العضو.',
     'login_successfully' => 'تم تسجيل الدخول بنجاح.',
     'registration_successfully' => 'تم التسجيل بنجاح.',
+    'something_went_wrong'  => 'حدث خطأ ما، يرجى المحاولة لاحقاً.',
 ];

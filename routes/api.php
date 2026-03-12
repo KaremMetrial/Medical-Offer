@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Resources\UserResource;
 
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\HomeController;
 
 Route::prefix('auth')->group(function () {
     // Standard rate limit for OTP sending: 6 times per minute per IP
@@ -13,6 +14,4 @@ Route::prefix('auth')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-Route::get('/user', function (Request $request) {
-    return new UserResource($request->user()->load(['country', 'governorate', 'city']));
-})->middleware('auth:sanctum');
+Route::get('/home', HomeController::class);

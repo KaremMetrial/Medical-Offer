@@ -11,8 +11,12 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Group;
 use App\Filament\Components\TranslatableFields;
 
+use App\Traits\UploadTrait;
+
 class CountryForm
 {
+    use UploadTrait;
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -55,7 +59,9 @@ class CountryForm
                         ->schema([
                             FileUpload::make('flag')
                                 ->label(__('filament.fields.flag'))
-                                ->image(),
+                                ->image()
+                                ->disk('public')
+                                ->directory('countries/flags'),
                             Select::make('timezone')
                                 ->label(__('filament.fields.timezone'))
                                 ->options(array_combine(timezone_identifiers_list(), timezone_identifiers_list()))

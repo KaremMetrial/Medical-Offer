@@ -14,8 +14,12 @@ use App\Filament\Components\TranslatableFields;
 use Filament\Forms\Components\FileUpload;
 use App\Models\Provider;
 use App\Models\Category;
+use App\Traits\UploadTrait;
+
 class OfferForm
 {
+    use UploadTrait;
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -74,6 +78,7 @@ class OfferForm
                                         ->label(__('filament.fields.image'))
                                         ->image()
                                         ->directory('offers/images')
+                                        ->storage('public')
                                         ->required(),
                                 ])
                                 ->orderColumn('sort_order')

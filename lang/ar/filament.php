@@ -5,6 +5,10 @@ return [
         'label' => 'إعلان',
         'plural_label' => 'الإعلانات',
     ],
+    'story' => [
+        'label' => 'ستوري',
+        'plural_label' => 'الستوريز',
+    ],
     'category' => [
         'label' => 'قسم',
         'plural_label' => 'الأقسام',
@@ -126,7 +130,15 @@ return [
         'phone' => 'الهاتف',
         'role' => 'الدور',
         'password' => 'كلمة المرور',
-        'offer' => 'عرض'    
+        'offer' => 'عرض',
+        'story_type' => 'نوع الستوري',
+        'external_link' => 'رابط خارجي',
+        'media_url' => 'ملف الوسائط',
+        'expiry_time' => 'وقت الانتهاء',
+        'countries' => 'الدول المستهدفة',
+        'views' => 'المشاهدات',
+        'created_at' => 'تاريخ الإنشاء',
+        'media_preview' => 'معاينة الوسائط'
     ],
     'nav' => [
         'group' => [

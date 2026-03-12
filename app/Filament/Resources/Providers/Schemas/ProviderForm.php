@@ -14,8 +14,12 @@ use App\Filament\Components\TranslatableFields;
 use App\Models\Category;
 use App\Models\Country;
 
+use App\Traits\UploadTrait;
+
 class ProviderForm
 {
+    use UploadTrait;
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -73,11 +77,13 @@ class ProviderForm
                             FileUpload::make('logo')
                                 ->label(__('filament.fields.logo'))
                                 ->image()
-                                ->directory('providers/logos'),
+                                ->directory('providers/logos')
+                                ->storage('public'),
                             FileUpload::make('cover')
                                 ->label(__('filament.fields.cover'))
                                 ->image()
-                                ->directory('providers/covers'),
+                                ->directory('providers/covers')
+                                ->storage('public'),
                         ])->columns(2),
 
                     Section::make(__('filament.sections.settings'))

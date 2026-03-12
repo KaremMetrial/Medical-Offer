@@ -84,4 +84,14 @@ class Category extends Model
             $q->where('name', 'like', '%' . $search . '%');
         });
     }
+
+    public function getImagePathAttribute(): ?string
+    {
+        return $this->icon;
+    }
+
+    public function getSrcAttribute(): ?string
+    {
+        return $this->icon ? asset('storage/' . $this->icon) : null;
+    }
 }

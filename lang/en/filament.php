@@ -5,6 +5,10 @@ return [
         'label' => 'Banner',
         'plural_label' => 'Banners',
     ],
+    'story' => [
+        'label' => 'Story',
+        'plural_label' => 'Stories',
+    ],
     'category' => [
         'label' => 'Category',
         'plural_label' => 'Categories',
@@ -127,6 +131,14 @@ return [
         'role' => 'Role',
         'password' => 'Password',
         'offer' => 'Offer',
+        'story_type' => 'Story Type',
+        'external_link' => 'External Link',
+        'media_url' => 'Media File',
+        'expiry_time' => 'Expiry Time',
+        'countries' => 'Target Countries',
+        'views' => 'Views',
+        'created_at' => 'Created At',
+        'media_preview' => 'Media Preview',
     ],
     'nav' => [
         'group' => [

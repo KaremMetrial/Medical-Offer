@@ -13,8 +13,12 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use App\Filament\Components\TranslatableFields;
 
+use App\Traits\UploadTrait;
+
 class BannerForm
 {
+    use UploadTrait;
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -70,6 +74,8 @@ class BannerForm
                             FileUpload::make('image_path')
                                 ->image()
                                 ->hiddenLabel()
+                                ->disk('public')
+                                ->directory('banners')
                                 ->required(),
                         ]),
 

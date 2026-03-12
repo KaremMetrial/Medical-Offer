@@ -13,6 +13,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
+use App\Http\Middleware\SetLocaleMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,7 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        $middleware->append(SetLocaleMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {
@@ -105,6 +106,12 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (QueryException $e, Request $request) use ($renderJson) {
             if ($request->is('api/*', 'admin/*')) {
                 return $renderJson(__('message.database_error'), 500, $e);
+            }
+        });
+
+        $exceptions->render(function (\Exception $e, Request $request) use ($renderJson) {
+            if ($request->is('api/*', 'admin/*')) {
+                return $renderJson(__('message.something_went_wrong'), 500, $e);
             }
         });
     })->create();

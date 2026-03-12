@@ -34,9 +34,53 @@
                             "host": ["{{base_url}}"],
                             "path": ["api", "auth", "send-otp"]
                         },
-                        "description": "Request an OTP for a given phone number. Rate limited to 6 requests per minute."
+                        "description": "Request an OTP for a given phone number. Rate limited to 6 requests per minute per IP.\n\n**Payload:**\n- `phone`: The user's phone number.\n\n**Common Status Codes:**\n- `200 OK`: OTP sent successfully.\n- `422 Unprocessable Entity`: Invalid phone number format.\n- `429 Too Many Requests`: Rate limit exceeded."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "name": "Success Response",
+                            "originalRequest": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Accept",
+                                        "value": "application/json"
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"phone\": \"01021469085\"\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/auth/send-otp",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "auth", "send-otp"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "header": [
+                                {
+                                    "key": "Content-Type",
+                                    "value": "application/json"
+                                }
+                            ],
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم إرسال رمز التحقق بنجاح.\",\n    \"data\": {\n        \"expires_in\": 360,\n        \"test_otp\": \"123456\"\n    }\n}"
+                        },
+                        {
+                            "name": "Validation Error",
+                            "status": "Unprocessable Entity",
+                            "code": 422,
+                            "body": "{\n    \"success\": false,\n    \"message\": \"رقم الهاتف مطلوب.\",\n    \"errors\": {\n        \"phone\": [\"رقم الهاتف مطلوب.\"]\n    }\n}"
+                        },
+                        {
+                            "name": "Rate Limit Exceeded",
+                            "status": "Too Many Requests",
+                            "code": 429,
+                            "body": "{\n    \"success\": false,\n    \"message\": \"عدد كبير جداً من الطلبات. يرجى المحاولة لاحقاً.\",\n    \"data\": \"Too Many Requests\"\n}"
+                        }
+                    ]
                 },
                 {
                     "name": "2. Verify OTP",
@@ -63,9 +107,49 @@
                             "host": ["{{base_url}}"],
                             "path": ["api", "auth", "verify-otp"]
                         },
-                        "description": "Verify the OTP. If the user is registered, returns a token. If not, returns registered: false."
+                        "description": "Verify the OTP provided by the user.\n\n**Behavior:**\n- If registered: Returns a Bearer token.\n- If NOT registered: Returns `registered: false`, indicating the user must complete registration.\n\n**Payload:**\n- `phone`: The user's phone number.\n- `otp`: The 6-digit code sent via SMS."
                     },
-                    "response": []
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.success && jsonData.data && jsonData.data.token) {",
+                                    "    pm.collectionVariables.set(\"auth_token\", jsonData.data.token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "response": [
+                        {
+                            "name": "Success (User Registered)",
+                            "originalRequest": {
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"phone\": \"01021469085\",\n    \"otp\": \"123456\"\n}"
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم تسجيل الدخول بنجاح.\",\n    \"data\": {\n        \"registered\": true,\n        \"token\": \"1|pG6vX...\",\n        \"user\": {\n            \"id\": 17,\n            \"name\": \"User Name\",\n            \"phone\": \"01021469085\",\n            \"email\": \"user@example.com\",\n            \"avatar\": \"http://127.0.0.1:8000/storage/users/avatars/avatar.jpg\",\n            \"country_id\": 1,\n            \"city_id\": 1\n        }\n    }\n}"
+                        },
+                        {
+                            "name": "Success (New User - Not Registered)",
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم التحقق بنجاح، يرجى إكمال التسجيل.\",\n    \"data\": {\n        \"registered\": false\n    }\n}"
+                        },
+                        {
+                            "name": "Invalid OTP",
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n    \"success\": false,\n    \"message\": \"رمز التحقق المدخل غير صحيح أو منتهي الصلاحية.\",\n    \"data\": null\n}"
+                        }
+                    ]
                 },
                 {
                     "name": "3. Register",
@@ -80,7 +164,7 @@
                         ],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"name\": \"John Doe\",\n    \"phone\": \"0123456789\",\n    \"email\": \"john@example.com\",\n    \"password\": \"password123\",\n    \"password_confirmation\": \"password123\",\n    \"country_id\": 1,\n    \"city_id\": 1\n}",
+                            "raw": "{\n    \"name\": \"John Doe\",\n    \"phone\": \"0123456789\",\n    \"country_id\": 1,\n    \"city_id\": 1\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -92,12 +176,45 @@
                             "host": ["{{base_url}}"],
                             "path": ["api", "auth", "register"]
                         },
-                        "description": "Complete registration for a verified phone number. Only applicable if Verify OTP returned registered: false."
+                        "description": "Register a new user after successful OTP verification."
                     },
-                    "response": []
-                },
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "var jsonData = pm.response.json();",
+                                    "if (jsonData.success && jsonData.data && jsonData.data.token) {",
+                                    "    pm.collectionVariables.set(\"auth_token\", jsonData.data.token);",
+                                    "}"
+                                ],
+                                "type": "text/javascript"
+                            }
+                        }
+                    ],
+                    "response": [
+                        {
+                            "name": "Registration Successful",
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم التسجيل بنجاح.\",\n    \"data\": {\n        \"token\": \"2|aB3xY...\",\n        \"user\": {\n            \"id\": 18,\n            \"name\": \"John Doe\",\n            \"phone\": \"0123456789\",\n            \"email\": null,\n            \"avatar\": \"http://127.0.0.1:8000/storage/users/avatars/avatar.jpg\",\n            \"country_id\": 1,\n            \"city_id\": 1\n        }\n    }\n}"
+                        },
+                        {
+                            "name": "Validation Error (Missing Fields)",
+                            "status": "Unprocessable Entity",
+                            "code": 422,
+                            "body": "{\n    \"success\": false,\n    \"message\": \"حقل الاسم مطلوب.\",\n    \"errors\": {\n        \"name\": [\"حقل الاسم مطلوب.\"],\n        \"country_id\": [\"حقل الدولة مطلوب.\"]\n    }\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Endpoints related to user authentication and OTP verification."
+        },
+        {
+            "name": "Home",
+            "item": [
                 {
-                    "name": "4. Get Authenticated User",
+                    "name": "Get Home Data",
                     "request": {
                         "auth": {
                             "type": "bearer",
@@ -115,19 +232,68 @@
                                 "key": "Accept",
                                 "value": "application/json",
                                 "type": "text"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ar",
+                                "type": "text",
+                                "description": "Language for the response (ar or en)"
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/user",
+                            "raw": "{{base_url}}/api/home",
                             "host": ["{{base_url}}"],
-                            "path": ["api", "user"]
+                            "path": ["api", "home"]
                         },
-                        "description": "Fetch the currently authenticated user's details using the Sanctum token."
+                        "description": "Main dashboard endpoint. Returns localized content for the mobile app home screen.\n\n**Features:**\n- **Caching:** Responses are cached for 30 minutes to ensure peak performance.\n- **Localization:** Titles and labels respond to `Accept-Language` header.\n- **Guest Support:** Returns general data if no token is provided."
                     },
-                    "response": []
+                    "response": [
+                        {
+                            "name": "Home Data Success (Arabic)",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    { "key": "Accept-Language", "value": "ar" }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/home",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "home"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم استرجاع بيانات الصفحة الرئيسية بنجاح.\",\n    \"data\": {\n        \"appbar\": {\n            \"title\": \"مرحباً، بك\",\n            \"subtitle\": \"سجل! وابدأ التوفير الآن.\",\n            \"avatar\": \"http://127.0.0.1:8000/storage/users/avatars/avatar.jpg\",\n            \"unread_notifications\": 0,\n            \"country_flag\": \"http://127.0.0.1:8000/storage/flags/eg.png\",\n            \"search_placeholder\": \"ابحث عن طبيب أو تخصص...\"\n        },\n        \"stories\": [\n            {\n                \"id\": 1,\n                \"name\": \"Provider Name\",\n                \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/p1.png\",\n                \"display_duration\": 30,\n                \"stories\": [\n                    {\n                        \"id\": 101,\n                        \"media_url\": \"http://127.0.0.1:8000/storage/stories/s1.mp4\",\n                        \"type\": \"video\",\n                        \"is_viewed\": false,\n                        \"external_link\": \"https://example.com\",\n                        \"expiry_time\": \"2024-03-12T10:00:00Z\"\n                    }\n                ]\n            }\n        ],\n        \"banners\": [\n            {\n                \"id\": 1,\n                \"image\": \"http://127.0.0.1:8000/storage/banners/b1.jpg\",\n                \"link_type\": \"offer\",\n                \"link_id\": 5,\n                \"external_url\": null,\n                \"title\": \"Banner Title\"\n            }\n        ],\n        \"categories\": {\n            \"label\": \"الأقسام\",\n            \"items\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"Pharma\",\n                    \"icon\": \"http://127.0.0.1:8000/storage/categories/pharma.png\"\n                }\n            ]\n        },\n        \"elite_doctors\": {\n            \"label\": \"نخبة الأطباء\",\n            \"items\": [\n                 {\n                    \"id\": 1,\n                    \"name\": \"Dr. Ahmed\",\n                    \"title\": \"Senior Surgeon\",\n                    \"description\": \"Expert in surgery\",\n                    \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/d1.png\",\n                    \"rating\": 4.8,\n                    \"reviews_count\": 120,\n                    \"max_discount\": 30,\n                    \"address\": \"Cairo, Egypt\"\n                }\n            ]\n        },\n        \"medical_centers\": {\n            \"label\": \"مراكز طبية\",\n            \"items\": []\n        },\n        \"care_offers\": {\n            \"label\": \"عروض العناية\",\n            \"items\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"Face Care\",\n                    \"description\": \"50% off on all face sessions\",\n                    \"discount_percent\": 50,\n                    \"image\": \"http://127.0.0.1:8000/storage/offers/f1.jpg\",\n                    \"rating\": 4.5,\n                    \"reviews_count\": 45,\n                    \"provider_name\": \"Center X\",\n                    \"provider_logo\": \"...\",\n                    \"address\": \"Alexandria\"\n                }\n            ]\n        }\n    }\n}"
+                        },
+                        {
+                            "name": "Home Data Success (English)",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    { "key": "Accept-Language", "value": "en" }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/home",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "home"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Home data retrieved successfully.\",\n    \"data\": {\n        \"appbar\": {\n            \"title\": \"Welcome!\",\n            \"subtitle\": \"Register! And start saving now.\",\n            \"search_placeholder\": \"Search for a doctor or specialty...\"\n        },\n        \"categories\": {\n            \"label\": \"Categories\",\n            \"items\": []\n        }\n    }\n}"
+                        },
+                        {
+                            "name": "Home Data Success (Authenticated User)",
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم استرجاع بيانات الصفحة الرئيسية بنجاح.\",\n    \"data\": {\n        \"appbar\": {\n            \"title\": \"مرحباً، أحمد\",\n            \"subtitle\": \"نتمنى لك يوماً سعيداً\",\n            \"unread_notifications\": 5\n        }\n    }\n}"
+                        }
+                    ]
                 }
             ],
-            "description": "Endpoints related to user authentication and OTP verification."
+            "description": "Endpoints for retrieving localized home page dashboard content."
         }
     ],
     "variable": [

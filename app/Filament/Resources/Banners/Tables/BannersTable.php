@@ -29,7 +29,8 @@ class BannersTable
                     ->toggleable(),
 
                 ImageColumn::make('image_path')
-                    ->label(__('filament.fields.image_path')),
+                    ->label(__('filament.fields.image_path'))
+                    ->disk('public'),
 
                 TextColumn::make('link_type')
                     ->label(__('filament.fields.link_type'))

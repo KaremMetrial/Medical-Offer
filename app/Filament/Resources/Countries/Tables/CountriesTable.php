@@ -24,6 +24,10 @@ class CountriesTable
                         return $query->searchName($search);
                     }),
 
+                \Filament\Tables\Columns\ImageColumn::make('flag')
+                    ->label(__('filament.fields.flag'))
+                    ->disk('public'),
+
                 TextColumn::make('phone_code')
                     ->label(__('filament.fields.phone_code'))
                     ->sortable(),

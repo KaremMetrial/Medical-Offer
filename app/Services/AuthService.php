@@ -2,17 +2,21 @@
 
 namespace App\Services;
 
-use App\Models\User;
+
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+
+use App\Repositories\Contracts\UserRepositoryInterface;
 
 class AuthService
 {
     protected $otpService;
+    protected $userRepository;
 
-    public function __construct(OtpService $otpService)
+    public function __construct(OtpService $otpService, UserRepositoryInterface $userRepository)
     {
         $this->otpService = $otpService;
+        $this->userRepository = $userRepository;
     }
 
     /**
@@ -25,10 +29,15 @@ class AuthService
     {
         // Find or create a draft user record
         // This allows registration flow too
-        $user = User::firstOrCreate(
-            ['phone' => $phone],
-            ['name' => 'Guest', 'is_active' => false]
-        );
+        $user = $this->userRepository->findByPhone($phone);
+
+        if (!$user) {
+            $user = $this->userRepository->create([
+                'phone' => $phone,
+                'name' => 'Guest',
+                'is_active' => false
+            ]);
+        }
 
         $otp = $this->otpService->send($user);
 
@@ -54,7 +63,7 @@ class AuthService
      */
     public function verifyOtp(string $phone, string $otp): array
     {
-        $user = User::where('phone', $phone)->first();
+        $user = $this->userRepository->findByPhone($phone);
 
         if (!$user || !$this->otpService->verify($user, $otp)) {
             throw ValidationException::withMessages([
@@ -89,19 +98,23 @@ class AuthService
      */
     public function register(array $data): array
     {
-        $user = User::where('phone', $data['phone'])->first();
-
+        $user = $this->userRepository->findByPhone($data['phone']);
         if (!$user) {
             throw new \Exception(__('message.user_not_found'));
+        }
+        if (isset($data['password']) && $data['password'] != null) {
+            $user->update([
+                'password'  => Hash::make($data['password']),
+            ]);
         }
 
         // Update user data, mark as active
         $user->update([
             'name'      => $data['name'],
             'email'     => $data['email'] ?? null,
-            'password'  => Hash::make($data['password']),
             'country_id' => $data['country_id'] ?? null,
             'city_id'    => $data['city_id'] ?? null,
+            'avatar'     => $data['avatar'] ?? null,
             'is_active'  => true,
             'role'       => 'user', // Default role
         ]);

@@ -11,6 +11,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+
 class UsersTable
 {
     public static function configure(Table $table): Table
@@ -20,6 +21,7 @@ class UsersTable
             ->columns([
                 ImageColumn::make('avatar')
                     ->label(__('filament.fields.image'))
+                    ->disk('public')
                     ->circular(),
 
                 TextColumn::make('name')
@@ -56,7 +58,7 @@ class UsersTable
             ->recordActions([
                 EditAction::make(),
                 DeleteAction::make()
-                    ->hidden(fn($record) => $record->role === 'super_admin' || $record->id === auth()->id()),
+                    ->hidden(fn(\App\Models\User $record) => $record->role === 'super_admin' || $record->id === auth()->id()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

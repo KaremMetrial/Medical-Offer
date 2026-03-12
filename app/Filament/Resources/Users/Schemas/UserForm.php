@@ -14,8 +14,12 @@ use App\Models\Country;
 use App\Models\Governorate;
 use App\Models\City;
 
+use App\Traits\UploadTrait;
+
 class UserForm
 {
+    use UploadTrait;
+
     public static function configure(Schema $schema): Schema
     {
         return $schema
@@ -29,7 +33,6 @@ class UserForm
                             TextInput::make('email')
                                 ->label(__('filament.fields.email'))
                                 ->email()
-                                ->required()
                                 ->unique(ignoreRecord: true),
                             TextInput::make('phone')
                                 ->label(__('filament.fields.phone'))
@@ -71,6 +74,7 @@ class UserForm
                             FileUpload::make('avatar')
                                 ->label(__('filament.fields.image'))
                                 ->image()
+                                ->disk('public')
                                 ->directory('users/avatars'),
                         ]),
 

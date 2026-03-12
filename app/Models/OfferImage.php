@@ -31,4 +31,14 @@ class OfferImage extends Model
     {
         return $this->sort_order === 0;
     }
+
+    public function getImagePathAttribute(): ?string
+    {
+        return $this->path;
+    }
+
+    public function getSrcAttribute(): ?string
+    {
+        return $this->path ? asset('storage/' . $this->path) : null;
+    }
 }

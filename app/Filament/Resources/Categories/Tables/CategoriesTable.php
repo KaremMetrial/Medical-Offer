@@ -26,7 +26,8 @@ class CategoriesTable
                     }),
 
                 ImageColumn::make('icon')
-                    ->label(__('filament.fields.icon')),
+                    ->label(__('filament.fields.icon'))
+                    ->disk('public'),
 
                 TextColumn::make('parent.name')
                     ->label(__('filament.fields.parent'))

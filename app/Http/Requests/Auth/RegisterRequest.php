@@ -4,10 +4,11 @@ namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Traits\ConvertArabicNumbers;
+use App\Traits\UploadTrait;
 
 class RegisterRequest extends FormRequest
 {
-    use ConvertArabicNumbers;
+    use ConvertArabicNumbers, UploadTrait;
 
     protected function prepareForValidation()
     {
@@ -37,6 +38,7 @@ class RegisterRequest extends FormRequest
             'password'   => ['nullable', 'string', 'min:8', 'confirmed'],
             'country_id' => ['nullable', 'exists:countries,id'],
             'city_id'    => ['nullable', 'exists:cities,id'],
+            'avatar'     => $this->imageRules(),
         ];
     }
 }

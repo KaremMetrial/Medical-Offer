@@ -126,10 +126,39 @@ class Provider extends Model
     {
         return $this->status === 'active' && $this->is_varified;
     }
+    public function stories()
+    {
+        return $this->hasMany(Story::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class);
+    }
     public function scopeSearchName($query, $search)
     {
         return $query->whereHas('translations', function ($q) use ($search) {
             $q->where('name', 'like', '%' . $search . '%');
         });
+    }
+
+    public function getImagePathAttribute(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function getLogoUrlAttribute(): ?string
+    {
+        return $this->logo ? asset('storage/' . $this->logo) : null;
+    }
+
+    public function getCoverUrlAttribute(): ?string
+    {
+        return $this->cover ? asset('storage/' . $this->cover) : null;
+    }
+
+    public function getSrcAttribute(): ?string
+    {
+        return $this->getLogoUrlAttribute();
     }
 }
