@@ -13,196 +13,126 @@ class ProviderSeeder extends Seeder
 {
     public function run(): void
     {
+        // Truncate existing data
+        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Illuminate\Support\Facades\DB::table('provider_translations')->truncate();
+        \Illuminate\Support\Facades\DB::table('provider_branch_translations')->truncate();
+        \Illuminate\Support\Facades\DB::table('provider_branches')->truncate();
+        \Illuminate\Support\Facades\DB::table('provider_categories')->truncate();
+        \Illuminate\Support\Facades\DB::table('providers')->truncate();
+        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        $sections = \App\Models\Section::all()->keyBy('type');
+        $categories = \App\Models\Category::all();
+        $cities = \App\Models\City::all();
+        $countries = \App\Models\Country::all();
+
         $providers = [
+            // Doctors
             [
-                'logo' => 'providers/health-care-center.png',
-                'cover' => 'providers/health-care-cover.jpg',
-                'phone' => '+966112345678',
-                'experince_years' => 15,
-                'country_code' => '+966',
-                'status' => 'active',
-                'is_varified' => true,
-                'views' => 1250,
-                'translations' => [
-                    'ar' => [
-                        'name' => 'مركز الرعاية الصحية',
-                        'title' => 'أفضل خدمات الرعاية الصحية',
-                        'description' => 'مركز طبي متكامل يقدم خدمات الرعاية الصحية المتميزة بأحدث التقنيات وأمهر الكوادر الطبية'
-                    ],
-                    'en' => [
-                        'name' => 'Health Care Center',
-                        'title' => 'Best Healthcare Services',
-                        'description' => 'Comprehensive medical center offering premium healthcare services with latest technology and expert medical staff'
-                    ]
-                ],
-                'branches' => [
-                    [
-                        'name_ar' => 'فرع الرياض',
-                        'name_en' => 'Riyadh Branch',
-                        'address' => 'شارع الملك فهد، الرياض',
-                        'lat' => 24.7136,
-                        'lng' => 46.6753,
-                        'phone' => '+966112345678',
-                        'working_hours_json' => [
-                            'sunday' => ['08:00', '20:00'],
-                            'monday' => ['08:00', '20:00'],
-                            'tuesday' => ['08:00', '20:00'],
-                            'wednesday' => ['08:00', '20:00'],
-                            'thursday' => ['08:00', '20:00'],
-                            'friday' => ['09:00', '15:00'],
-                            'saturday' => ['10:00', '14:00']
-                        ],
-                        'is_main' => true,
-                        'is_active' => true
-                    ]
-                ]
-            ],
-            [
-                'logo' => 'providers/beauty-center.png',
-                'cover' => 'providers/beauty-cover.jpg',
-                'phone' => '+20223456789',
+                'section_type' => \App\Enums\SectionType::DOCTORS,
+                'category_keyword' => 'Pediatrics',
+                'phone' => '01011111111',
                 'experince_years' => 10,
-                'country_code' => '+20',
-                'status' => 'active',
-                'is_varified' => true,
-                'views' => 890,
-                'translations' => [
-                    'ar' => [
-                        'name' => 'مركز الجمال والعناية',
-                        'title' => 'جمالك هو أولويتنا',
-                        'description' => 'مركز تجميلي متكامل يقدم أحدث علاجات البشرة والشعر بأيدي خبراء متخصصين'
-                    ],
-                    'en' => [
-                        'name' => 'Beauty & Care Center',
-                        'title' => 'Your Beauty is Our Priority',
-                        'description' => 'Complete beauty center offering latest skin and hair treatments by expert specialists'
-                    ]
+                'ar' => ['name' => 'د. أحمد علي', 'title' => 'استشاري طب الأطفال'],
+                'en' => ['name' => 'Dr. Ahmed Ali', 'title' => 'Pediatrics Consultant'],
+                'branch' => [
+                    'address' => '15 شارع التحرير، وسط البلد، القاهرة',
+                    'lat' => 30.0444, 'lng' => 31.2357,
                 ],
-                'branches' => [
-                    [
-                        'name_ar' => 'فرع القاهرة',
-                        'name_en' => 'Cairo Branch',
-                        'address' => 'شارع عبد الرحمن خليل، القاهرة',
-                        'lat' => 30.0444,
-                        'lng' => 31.2357,
-                        'phone' => '+20223456789',
-                        'working_hours_json' => [
-                            'sunday' => ['09:00', '21:00'],
-                            'monday' => ['09:00', '21:00'],
-                            'tuesday' => ['09:00', '21:00'],
-                            'wednesday' => ['09:00', '21:00'],
-                            'thursday' => ['09:00', '21:00'],
-                            'friday' => ['10:00', '18:00'],
-                            'saturday' => ['10:00', '16:00']
-                        ],
-                        'is_main' => true,
-                        'is_active' => true
-                    ]
-                ]
             ],
+            // Medical Centers
             [
-                'logo' => 'providers/dental-clinic.png',
-                'cover' => 'providers/dental-cover.jpg',
-                'phone' => '+97141234567',
-                'experince_years' => 12,
-                'country_code' => '+971',
-                'status' => 'active',
-                'is_varified' => true,
-                'views' => 1560,
-                'translations' => [
-                    'ar' => [
-                        'name' => 'عيادة الأسنان المتقدمة',
-                        'title' => 'ابتسامتك الجميلة تهمنا',
-                        'description' => 'عيادة أسنان متطورة تقدم جميع خدمات طب الأسنان التجميلي والعلاجي بأحدث التقنيات'
-                    ],
-                    'en' => [
-                        'name' => 'Advanced Dental Clinic',
-                        'title' => 'Your Beautiful Smile Matters',
-                        'description' => 'Advanced dental clinic offering all cosmetic and therapeutic dental services with latest technology'
-                    ]
+                'section_type' => \App\Enums\SectionType::CENTERS,
+                'category_keyword' => 'Healthcare',
+                'phone' => '01022222222',
+                'experince_years' => 20,
+                'ar' => ['name' => 'مركز الشفاء الطبي', 'title' => 'رعاية طبية متكاملة'],
+                'en' => ['name' => 'Al-Shifa Medical Center', 'title' => 'Integrated Medical Care'],
+                'branch' => [
+                    'address' => '42 شارع الجيزة، الدقي، الجيزة',
+                    'lat' => 30.0626, 'lng' => 31.2099,
                 ],
-                'branches' => [
-                    [
-                        'name_ar' => 'فرع دبي',
-                        'name_en' => 'Dubai Branch',
-                        'address' => 'شارع الشيخ زايد، دبي',
-                        'lat' => 25.2048,
-                        'lng' => 55.2708,
-                        'phone' => '+97141234567',
-                        'working_hours_json' => [
-                            'sunday' => ['08:00', '20:00'],
-                            'monday' => ['08:00', '20:00'],
-                            'tuesday' => ['08:00', '20:00'],
-                            'wednesday' => ['08:00', '20:00'],
-                            'thursday' => ['08:00', '20:00'],
-                            'friday' => ['09:00', '17:00'],
-                            'saturday' => ['09:00', '15:00']
-                        ],
-                        'is_main' => true,
-                        'is_active' => true
-                    ]
-                ]
-            ]
+            ],
+            // Labs
+            [
+                'section_type' => \App\Enums\SectionType::LABS,
+                'category_keyword' => 'Laboratories',
+                'phone' => '01033333333',
+                'experince_years' => 15,
+                'ar' => ['name' => 'معامل البرج', 'title' => 'دقة في التحاليل'],
+                'en' => ['name' => 'Al-Borg Labs', 'title' => 'Precision in Analysis'],
+                'branch' => [
+                    'address' => '7 شارع مصدق، المهندسين، الجيزة',
+                    'lat' => 30.0561, 'lng' => 31.2084,
+                ],
+            ],
+            // Pharmacies
+            [
+                'section_type' => \App\Enums\SectionType::PHARMACIES,
+                'category_keyword' => 'Pharmacies',
+                'phone' => '01044444444',
+                'experince_years' => 25,
+                'ar' => ['name' => 'صيدليات العزبي', 'title' => 'دواءك في أمان'],
+                'en' => ['name' => 'El-Ezaby Pharmacies', 'title' => 'Your Medicine is Safe'],
+                'branch' => [
+                    'address' => '120 شارع عباس العقاد، مدينة نصر، القاهرة',
+                    'lat' => 30.0671, 'lng' => 31.3260,
+                ],
+            ],
         ];
 
-        foreach ($providers as $providerData) {
-            $translations = $providerData['translations'];
-            $branches = $providerData['branches'];
-            unset($providerData['translations']);
-            unset($providerData['branches']);
+        foreach ($providers as $data) {
+            $section = $sections[$data['section_type']->value] ?? null;
+            $category = $categories->filter(fn($c) => str_contains($c->name, $data['category_keyword']))->first();
+            $country = $countries->first();
+            $city = $cities->first();
 
-            $country = \App\Models\Country::where('phone_code', $providerData['country_code'])->first();
+            $provider = Provider::create([
+                'section_id' => $section?->id,
+                'country_id' => $country?->id,
+                'phone' => $data['phone'],
+                'experince_years' => $data['experince_years'],
+                'status' => 'active',
+                'is_varified' => true,
+                'logo' => 'providers/default-logo.png',
+                'cover' => 'providers/default-cover.jpg',
+            ]);
 
-            if ($country) {
-                $providerData['country_id'] = $country->id;
-                unset($providerData['country_code']);
+            // Translations
+            foreach (['ar', 'en'] as $lang) {
+                \App\Models\ProviderTranslation::create([
+                    'provider_id' => $provider->id,
+                    'local' => $lang,
+                    'name' => $data[$lang]['name'],
+                    'title' => $data[$lang]['title'],
+                    'description' => $data[$lang]['name'] . ' provides high quality services in ' . $data['category_keyword'],
+                ]);
+            }
 
-                $provider = Provider::updateOrCreate(
-                    ['phone' => $providerData['phone']],
-                    $providerData
-                );
+            // Category link
+            if ($category) {
+                $provider->categories()->attach($category->id);
+            }
 
-                // Create translations
-                foreach ($translations as $locale => $translation) {
-                    ProviderTranslation::updateOrCreate(
-                        [
-                            'provider_id' => $provider->id,
-                            'local' => $locale
-                        ],
-                        $translation
-                    );
-                }
+            // Branch link
+            if ($city) {
+                $branch = \App\Models\ProviderBranch::create([
+                    'provider_id' => $provider->id,
+                    'country_id' => $country?->id,
+                    'governorate_id' => $city->governorate_id,
+                    'city_id' => $city->id,
+                    'address' => $data['branch']['address'] ?? 'Cairo, Egypt',
+                    'lat' => $data['branch']['lat'] ?? 30.0444,
+                    'lng' => $data['branch']['lng'] ?? 31.2357,
+                    'is_main' => true,
+                    'is_active' => true,
+                ]);
 
-                // Create branches
-                foreach ($branches as $branchData) {
-                    $city = City::whereHas('translations', function($query) use ($branchData) {
-                        $query->where('name', 'like', '%' . $branchData['name_en'] . '%');
-                    })->first();
-
-                    if ($city) {
-                        ProviderBranch::updateOrCreate(
-                            [
-                                'provider_id' => $provider->id,
-                                'city_id' => $city->id
-                            ],
-                            [
-                                'provider_id' => $provider->id,
-                                'country_id' => $country->id,
-                                'governorate_id' => $city->governorate_id,
-                                'city_id' => $city->id,
-                                'name_ar' => $branchData['name_ar'],
-                                'name_en' => $branchData['name_en'],
-                                'address' => $branchData['address'],
-                                'lat' => $branchData['lat'],
-                                'lng' => $branchData['lng'],
-                                'phone' => $branchData['phone'],
-                                'working_hours_json' => $branchData['working_hours_json'],
-                                'is_main' => $branchData['is_main'],
-                                'is_active' => $branchData['is_active']
-                            ]
-                        );
-                    }
-                }
+                \Illuminate\Support\Facades\DB::table('provider_branch_translations')->insert([
+                    ['provider_branch_id' => $branch->id, 'local' => 'ar', 'name' => 'فرع رئيسي', 'created_at' => now(), 'updated_at' => now()],
+                    ['provider_branch_id' => $branch->id, 'local' => 'en', 'name' => 'Main Branch', 'created_at' => now(), 'updated_at' => now()],
+                ]);
             }
         }
     }

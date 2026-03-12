@@ -16,199 +16,136 @@ class OfferSeeder extends Seeder
 {
     public function run(): void
     {
-        $offers = [
+        // Truncate existing data
+        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        \Illuminate\Support\Facades\DB::table('offer_translations')->truncate();
+        \Illuminate\Support\Facades\DB::table('offer_images')->truncate();
+        \Illuminate\Support\Facades\DB::table('offer_plan_discounts')->truncate();
+        \Illuminate\Support\Facades\DB::table('offers')->truncate();
+        \Illuminate\Support\Facades\DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+
+        $providers = Provider::with('translations')->get()->keyBy(fn($p) => $p->phone);
+        $categories = Category::with('translations')->get();
+        $plans = MemberPlan::all();
+
+        $offerTemplates = [
+            // === Doctor Offers ===
             [
-                'provider_phone' => '+966112345678',
-                'category_name' => 'General Medicine',
-                'discount_percent' => 20,
-                'start_date' => now()->subDays(5),
-                'end_date' => now()->addDays(25),
-                'status' => 'published',
-                'show_in_home' => true,
-                'sort_order' => 1,
-                'views' => 500,
-                'translations' => [
-                    'ar' => [
-                        'name' => 'فحص طبي شامل',
-                        'description' => 'احصل على فحص طبي شامل بخصم 20% لجميع الفئات',
-                        'terms' => 'العرض ساري على جميع الفحوصات الطبية الشاملة'
-                    ],
-                    'en' => [
-                        'name' => 'Comprehensive Medical Checkup',
-                        'description' => 'Get 20% discount on comprehensive medical checkups for all categories',
-                        'terms' => 'Offer valid on all comprehensive medical checkups'
-                    ]
-                ],
-                'images' => [
-                    ['path' => 'offers/medical-checkup.jpg', 'type' => 'image', 'sort_order' => 0]
-                ],
-                'plan_discounts' => [
-                    ['plan_name' => 'Premium Plan', 'discount_percent' => 25],
-                    ['plan_name' => 'Annual Plan', 'discount_percent' => 30]
-                ]
+                'provider_phone' => '01011111111',
+                'category_keyword' => 'Pediatrics',
+                'discount' => 100,
+                'ar' => ['name' => 'كشف أطفال مجاني', 'description' => 'كشف مجاني لأول مرة بمناسبة الافتتاح', 'terms' => 'مرة واحدة فقط لكل مريض'],
+                'en' => ['name' => 'Free Pediatrics Checkup', 'description' => 'Free first-time consultation for new patients', 'terms' => 'Valid once per patient'],
+                'show_home' => true, 'sort' => 1,
             ],
             [
-                'provider_phone' => '+20223456789',
-                'category_name' => 'Skin Care',
-                'discount_percent' => 35,
-                'start_date' => now()->subDays(3),
-                'end_date' => now()->addDays(27),
-                'status' => 'published',
-                'show_in_home' => true,
-                'sort_order' => 2,
-                'views' => 800,
-                'translations' => [
-                    'ar' => [
-                        'name' => 'علاجات البشرة الفاخرة',
-                        'description' => 'خصم 35% على جميع علاجات البشرة الفاخرة',
-                        'terms' => 'العرض يشمل جميع علاجات البشرة المقدمة من خبرائنا'
-                    ],
-                    'en' => [
-                        'name' => 'Luxury Skin Treatments',
-                        'description' => '35% discount on all luxury skin treatments',
-                        'terms' => 'Offer includes all skin treatments provided by our experts'
-                    ]
-                ],
-                'images' => [
-                    ['path' => 'offers/skin-treatment.jpg', 'type' => 'image', 'sort_order' => 0]
-                ],
-                'plan_discounts' => [
-                    ['plan_name' => 'Premium Plan', 'discount_percent' => 40],
-                    ['plan_name' => 'Annual Plan', 'discount_percent' => 45]
-                ]
+                'provider_phone' => '01011111111',
+                'category_keyword' => 'Pediatrics',
+                'discount' => 30,
+                'ar' => ['name' => '30% خصم على التطعيمات', 'description' => 'خصم على جميع التطعيمات للأطفال دون سن 5 سنوات', 'terms' => 'يشمل الأطفال من عمر 0 إلى 5 سنوات'],
+                'en' => ['name' => '30% Off Vaccinations', 'description' => 'Discount on all vaccinations for children under 5', 'terms' => 'For children aged 0-5 years'],
+                'show_home' => true, 'sort' => 2,
+            ],
+
+            // === Medical Center Offers ===
+            [
+                'provider_phone' => '01022222222',
+                'category_keyword' => 'Healthcare',
+                'discount' => 50,
+                'ar' => ['name' => 'فحص شامل بخصم 50%', 'description' => 'فحص طبي شامل يغطي كافة الأجهزة', 'terms' => 'يُطبق على حجوزات الفحص الشامل فقط'],
+                'en' => ['name' => 'Full Checkup 50% OFF', 'description' => 'Comprehensive screening covering all body systems', 'terms' => 'Applies to full body checkup package only'],
+                'show_home' => true, 'sort' => 3,
             ],
             [
-                'provider_phone' => '+97141234567',
-                'category_name' => 'Dental Aesthetics',
-                'discount_percent' => 25,
-                'start_date' => now()->addDays(1),
-                'end_date' => now()->addDays(30),
-                'status' => 'published',
-                'show_in_home' => false,
-                'sort_order' => 3,
-                'views' => 300,
-                'translations' => [
-                    'ar' => [
-                        'name' => 'تبييض الأسنان الاحترافي',
-                        'description' => 'تبييض أسنان احترافي بخصم 25% لفترة محدودة',
-                        'terms' => 'العرض ساري على جلسات تبييض الأسنان الاحترافية'
-                    ],
-                    'en' => [
-                        'name' => 'Professional Teeth Whitening',
-                        'description' => 'Professional teeth whitening with 25% discount for limited time',
-                        'terms' => 'Offer valid on professional teeth whitening sessions'
-                    ]
-                ],
-                'images' => [
-                    ['path' => 'offers/teeth-whitening.jpg', 'type' => 'image', 'sort_order' => 0]
-                ],
-                'plan_discounts' => [
-                    ['plan_name' => 'Premium Plan', 'discount_percent' => 30],
-                    ['plan_name' => 'Annual Plan', 'discount_percent' => 35]
-                ]
+                'provider_phone' => '01022222222',
+                'category_keyword' => 'Dermatology',
+                'discount' => 25,
+                'ar' => ['name' => 'خصم 25% على طب الجلد', 'description' => 'أحدث علاجات مشاكل البشرة مع خصم حصري', 'terms' => 'ساري على الجلسات العلاجية'],
+                'en' => ['name' => '25% Off Dermatology', 'description' => 'Expert dermatology treatments at a discounted rate', 'terms' => 'Valid on treatment sessions'],
+                'show_home' => true, 'sort' => 4,
+            ],
+
+            // === Lab Offers ===
+            [
+                'provider_phone' => '01033333333',
+                'category_keyword' => 'Laboratories',
+                'discount' => 100,
+                'ar' => ['name' => 'تحليل سكر مجاني', 'description' => 'تحليل سكر صائم مجاناً مع أي باقة تحاليل', 'terms' => 'مع شراء باقة تحاليل فقط'],
+                'en' => ['name' => 'Free Glucose Test', 'description' => 'Free fasting glucose test with any lab package', 'terms' => 'With purchase of a lab package'],
+                'show_home' => true, 'sort' => 5,
             ],
             [
-                'provider_phone' => '+966112345678',
-                'category_name' => 'Pediatrics',
-                'discount_percent' => 15,
-                'start_date' => now()->subDays(10),
-                'end_date' => now()->addDays(20),
-                'status' => 'published',
-                'show_in_home' => false,
-                'sort_order' => 4,
-                'views' => 200,
-                'translations' => [
-                    'ar' => [
-                        'name' => 'فحص الأطفال الشامل',
-                        'description' => 'فحص طبي شامل للأطفال بخصم 15%',
-                        'terms' => 'العرض ساري على الفحوصات الطبية للأطفال من سن 0 إلى 12 سنة'
-                    ],
-                    'en' => [
-                        'name' => 'Comprehensive Children Checkup',
-                        'description' => 'Comprehensive medical checkup for children with 15% discount',
-                        'terms' => 'Offer valid for medical checkups for children aged 0 to 12 years'
-                    ]
-                ],
-                'images' => [
-                    ['path' => 'offers/children-checkup.jpg', 'type' => 'image', 'sort_order' => 0]
-                ],
-                'plan_discounts' => [
-                    ['plan_name' => 'Premium Plan', 'discount_percent' => 20],
-                    ['plan_name' => 'Annual Plan', 'discount_percent' => 25]
-                ]
-            ]
+                'provider_phone' => '01033333333',
+                'category_keyword' => 'Radiology',
+                'discount' => 40,
+                'ar' => ['name' => '40% خصم على الأشعة', 'description' => 'خصم على جميع أنواع الأشعة', 'terms' => 'ساري على أشعة الصدر والبطن'],
+                'en' => ['name' => '40% Off X-Ray', 'description' => 'Discount on all types of radiology scans', 'terms' => 'Valid on chest and abdominal x-rays'],
+                'show_home' => true, 'sort' => 6,
+            ],
+
+            // === Pharmacy Offers ===
+            [
+                'provider_phone' => '01044444444',
+                'category_keyword' => 'Pharmacies',
+                'discount' => 10,
+                'ar' => ['name' => 'خصم 10% على مستحضرات التجميل', 'description' => 'خصم فوري على جميع المستحضرات المستوردة', 'terms' => 'لا يُجمع مع عروض أخرى'],
+                'en' => ['name' => '10% OFF Cosmetics', 'description' => 'Instant discount on all imported cosmetics', 'terms' => 'Cannot be combined with other offers'],
+                'show_home' => true, 'sort' => 7,
+            ],
+            [
+                'provider_phone' => '01044444444',
+                'category_keyword' => 'Pharmacies',
+                'discount' => 15,
+                'ar' => ['name' => '15% على الفيتامينات', 'description' => 'خصم على جميع المكملات الغذائية والفيتامينات', 'terms' => 'ساري على الكميات من 2 عبوات فأكثر'],
+                'en' => ['name' => '15% Off Vitamins', 'description' => 'Discount on all dietary supplements and vitamins', 'terms' => 'Valid on purchases of 2+ units'],
+                'show_home' => false, 'sort' => 8,
+            ],
         ];
 
-        foreach ($offers as $offerData) {
-            $translations = $offerData['translations'];
-            $images = $offerData['images'];
-            $planDiscounts = $offerData['plan_discounts'];
-            unset($offerData['translations']);
-            unset($offerData['images']);
-            unset($offerData['plan_discounts']);
+        foreach ($offerTemplates as $template) {
+            $provider = $providers->get($template['provider_phone']);
+            $category = $categories->filter(fn($c) => str_contains($c->name ?? '', $template['category_keyword']))->first();
 
-            $provider = Provider::where('phone', $offerData['provider_phone'])->first();
-            $category = Category::whereHas('translations', function($query) use ($offerData) {
-                $query->where('name', $offerData['category_name']);
-            })->first();
+            if (!$provider || !$category) {
+                // Try parent category fallback
+                $category = $categories->filter(fn($c) => str_contains($c->name ?? '', explode(' ', $template['category_keyword'])[0]))->first();
+            }
 
-            if ($provider && $category) {
-                $offerData['provider_id'] = $provider->id;
-                $offerData['category_id'] = $category->id;
-                unset($offerData['provider_phone']);
-                unset($offerData['category_name']);
+            if (!$provider) continue;
 
-                $offer = Offer::updateOrCreate(
-                    [
-                        'provider_id' => $offerData['provider_id'],
-                        'category_id' => $offerData['category_id']
-                    ],
-                    $offerData
-                );
+            $offer = Offer::create([
+                'provider_id' => $provider->id,
+                'category_id' => $category?->id ?? $categories->first()->id,
+                'discount_percent' => $template['discount'],
+                'start_date' => now()->subDays(1),
+                'end_date' => now()->addDays(30),
+                'status' => 'published',
+                'show_in_home' => $template['show_home'],
+                'sort_order' => $template['sort'],
+            ]);
 
-                // Create translations
-                foreach ($translations as $locale => $translation) {
-                    OfferTranslation::updateOrCreate(
-                        [
-                            'offer_id' => $offer->id,
-                            'local' => $locale
-                        ],
-                        $translation
-                    );
-                }
+            foreach (['ar', 'en'] as $lang) {
+                OfferTranslation::create([
+                    'offer_id' => $offer->id,
+                    'local' => $lang,
+                    'name' => $template[$lang]['name'],
+                    'description' => $template[$lang]['description'],
+                    'terms' => $template[$lang]['terms'],
+                ]);
+            }
 
-                // Create images
-                foreach ($images as $imageData) {
-                    OfferImage::updateOrCreate(
-                        [
-                            'offer_id' => $offer->id,
-                            'path' => $imageData['path']
-                        ],
-                        $imageData
-                    );
-                }
+            OfferImage::create([
+                'offer_id' => $offer->id,
+                'path' => 'offers/default-offer.jpg',
+                'type' => 'image',
+            ]);
 
-                // Create plan discounts
-                foreach ($planDiscounts as $discountData) {
-                    $plan = MemberPlan::join('plan_translations', 'member_plans.id', '=', 'plan_translations.plan_id')
-                        ->where('plan_translations.name', $discountData['plan_name'])
-                        ->select('member_plans.*')
-                        ->first();
-
-                    if ($plan) {
-                        OfferPlanDiscount::updateOrCreate(
-                            [
-                                'offer_id' => $offer->id,
-                                'plan_id' => $plan->id
-                            ],
-                            [
-                                'offer_id' => $offer->id,
-                                'plan_id' => $plan->id,
-                                'discount_percent' => $discountData['discount_percent']
-                            ]
-                        );
-                    }
-                }
+            foreach ($plans as $plan) {
+                OfferPlanDiscount::create([
+                    'offer_id' => $offer->id,
+                    'plan_id' => $plan->id,
+                    'discount_percent' => min($template['discount'] + 5, 100),
+                ]);
             }
         }
     }

@@ -10,6 +10,7 @@ class Category extends Model
     use HasFactory;
 
     protected $fillable = [
+        'section_id',
         'icon',
         'parent_id',
         'is_show',
@@ -18,11 +19,17 @@ class Category extends Model
     ];
 
     protected $casts = [
+        'section_id' => 'integer',
         'parent_id' => 'integer',
         'is_show' => 'boolean',
         'is_active' => 'boolean',
         'sort_order' => 'integer'
     ];
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
 
     public function parent()
     {
@@ -54,13 +61,20 @@ class Category extends Model
         return $this->hasMany(OfferCategory::class);
     }
 
-    // Helper method to get translation
     public function translation($locale = null)
     {
         $locale = $locale ?? app()->getLocale();
+        
+        // If translations are already loaded, use them to avoid N+1 queries
+        if ($this->relationLoaded('translations')) {
+            return $this->translations->firstWhere('local', $locale) ?? $this->translations->first();
+        }
+        
+        // Fall back to query if not loaded
         return $this->translations()->where('local', $locale)->first()
             ?? $this->translations()->first();
     }
+
 
     public function getNameAttribute()
     {

@@ -8,12 +8,11 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use App\Filament\Components\TranslatableFields;
 use App\Models\Category;
-
 use App\Traits\UploadTrait;
+use App\Models\Section as SectionDB;
 
 class CategoryForm
 {
@@ -21,63 +20,71 @@ class CategoryForm
 
     public static function configure(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                Group::make([
-                    Section::make(__('filament.sections.translations'))
-                        ->schema([
-                            TranslatableFields::make([
-                                'name' => [
-                                    'type' => 'text',
-                                    'label' => __('filament.fields.name'),
-                                    'overrides' => fn($component) => $component->columnSpanFull(),
-                                ],
-                            ]),
+        return $schema->components([
+            Group::make([
+                Section::make(__('filament.sections.translations'))
+                    ->schema([
+                        TranslatableFields::make([
+                            'name' => [
+                                'type' => 'text',
+                                'label' => __('filament.fields.name'),
+                                'overrides' => fn($component) => $component->columnSpanFull(),
+                            ],
                         ]),
+                    ]),
 
-                    Section::make(__('filament.sections.general'))
-                        ->schema([
-                            Select::make('parent_id')
-                                ->label(__('filament.fields.parent'))
-                                ->options(
-                                    fn(?Category $record) => Category::query()
-                                        ->when($record, fn($query) => $query->where('id', '!=', $record->id))
-                                        ->get()
-                                        ->pluck('name', 'id')
-                                )
-                                ->searchable()
-                                ->placeholder(__('filament.fields.select_parent')),
-                        ])->columns(1),
-                ])->columnSpan(3),
+                Section::make(__('filament.sections.general'))
+                    ->schema([
+                        Select::make('section_id')
+                            ->label(__('filament.section.label'))
+                            ->relationship('section', 'id')
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                            ->options(fn() => SectionDB::all()->pluck('name', 'id'))
+                            ->searchable()
+                            ->placeholder(__('filament.fields.select_section')),
 
-                Group::make([
-                    Section::make(__('filament.sections.media'))
-                        ->schema([
-                            FileUpload::make('icon')
-                                ->label(__('filament.fields.icon'))
-                                ->image()
-                                ->disk('public')
-                                ->directory('categories')
-                                ->hiddenLabel(),
-                        ]),
+                        Select::make('parent_id')
+                            ->label(__('filament.fields.parent'))
+                            ->relationship('parent', 'id')
+                            ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                            ->options(
+                                fn(?Category $record) => Category::query()
+                                    ->when($record, fn($query) => $query->where('id', '!=', $record->id))
+                                    ->pluck('name', 'id')
+                            )
+                            ->searchable()
+                            ->placeholder(__('filament.fields.select_parent')),
+                    ])->columns(1),
+            ])->columnSpan(3),
 
-                    Section::make(__('filament.sections.settings'))
-                        ->schema([
-                            Toggle::make('is_active')
-                                ->label(__('filament.fields.is_active'))
-                                ->default(true),
+            Group::make([
+                Section::make(__('filament.sections.media'))
+                    ->schema([
+                        FileUpload::make('icon')
+                            ->label(__('filament.fields.icon'))
+                            ->image()
+                            ->disk('public')
+                            ->directory('categories')
+                            ->hiddenLabel(),
+                    ]),
 
-                            Toggle::make('is_show')
-                                ->label(__('filament.fields.is_show'))
-                                ->default(true),
+                Section::make(__('filament.sections.settings'))
+                    ->schema([
+                        Toggle::make('is_active')
+                            ->label(__('filament.fields.is_active'))
+                            ->default(true),
 
-                            TextInput::make('sort_order')
-                                ->label(__('filament.fields.sort_order'))
-                                ->required()
-                                ->numeric()
-                                ->default(0),
-                        ]),
-                ])->columnSpan(3),
-            ]);
+                        Toggle::make('is_show')
+                            ->label(__('filament.fields.is_show'))
+                            ->default(true),
+
+                        TextInput::make('sort_order')
+                            ->label(__('filament.fields.sort_order'))
+                            ->required()
+                            ->numeric()
+                            ->default(0),
+                    ]),
+            ])->columnSpan(3),
+        ]);
     }
 }

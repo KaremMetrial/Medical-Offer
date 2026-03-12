@@ -10,8 +10,12 @@ return [
         'plural_label' => 'الستوريز',
     ],
     'category' => [
-        'label' => 'قسم',
-        'plural_label' => 'الأقسام',
+        'label' => 'قسم فرعي',
+        'plural_label' => 'الأقسام الفرعية',
+    ],
+    'section' => [
+        'label' => 'قسم رئيسي',
+        'plural_label' => 'الأقسام الرئيسية',
     ],
     'country' => [
         'label' => 'دولة',
@@ -74,7 +78,8 @@ return [
         'provider' => 'مزود الخدمة',
         'category' => 'القسم',
         'parent' => 'القسم الرئيسي',
-        'select_parent' => 'اختر قسماً رئيسياً',
+        'select_section' => 'اختر قسماً رئيسياً (Section)',
+        'select_parent' => 'اختر قسماً فرعياً (Parent Category)',
         'icon' => 'الأيقونة',
         'is_show' => 'عرض في القائمة',
         'image_path' => 'مسار الصورة',
@@ -138,7 +143,8 @@ return [
         'countries' => 'الدول المستهدفة',
         'views' => 'المشاهدات',
         'created_at' => 'تاريخ الإنشاء',
-        'media_preview' => 'معاينة الوسائط'
+        'media_preview' => 'معاينة الوسائط',
+        'type' => 'النوع',
     ],
     'nav' => [
         'group' => [
@@ -177,6 +183,12 @@ return [
             'paid' => 'مدفوع',
             'failed' => 'فشل',
             'refunded' => 'مسترجع',
+        ],
+        'section_type' => [
+            'doctors' => 'أطباء',
+            'centers' => 'مراكز طبية',
+            'labs' => 'تحاليل وأشعة',
+            'pharmacies' => 'صيدليات',
         ],
     ],
 ];

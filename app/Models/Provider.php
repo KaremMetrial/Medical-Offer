@@ -10,6 +10,7 @@ class Provider extends Model
     use HasFactory;
 
     protected $fillable = [
+        'section_id',
         'logo',
         'cover',
         'phone',
@@ -21,11 +22,17 @@ class Provider extends Model
     ];
 
     protected $casts = [
+        'section_id' => 'integer',
         'country_id' => 'integer',
         'experince_years' => 'integer',
         'views' => 'integer',
         'is_varified' => 'boolean'
     ];
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
 
     public function translations()
     {
@@ -92,13 +99,19 @@ class Provider extends Model
         return $this->users()->withPivot('branch_id');
     }
 
-    // Helper method to get translation
     public function translation($locale = null)
     {
         $locale = $locale ?? app()->getLocale();
+        
+        if ($this->relationLoaded('translations')) {
+            return $this->translations->firstWhere('local', $locale) ?? $this->translations->first();
+        }
+        
         return $this->translations()->where('local', $locale)->first()
             ?? $this->translations()->first();
     }
+
+
 
     public function getNameAttribute()
     {
@@ -118,6 +131,12 @@ class Provider extends Model
     // Get main branch
     public function mainBranch()
     {
+        // If branches are already loaded, use them to avoid N+1 queries
+        if ($this->relationLoaded('branches')) {
+            return $this->branches->firstWhere('is_main', true);
+        }
+        
+        // Fall back to query if not loaded
         return $this->branches()->where('is_main', true)->first();
     }
 

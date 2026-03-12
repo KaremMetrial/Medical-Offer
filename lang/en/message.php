@@ -15,5 +15,11 @@ return [
     'user_not_found'    => 'User record not found.',
     'login_successfully' => 'Logged in successfully.',
     'registration_successfully' => 'Registration completed successfully.',
-    'something_went_wrong' => 'Something went wrong. Please try again.'
+    'something_went_wrong' => 'Something went wrong. Please try again.',
+    'categories'           => 'Categories',
+    'cities'               => 'Cities',
+    'countries'            => 'Countries',
+    'offers'               => 'Offers',
+    'providers'            => 'Providers',
+    'sections'             => 'Sections',
 ];

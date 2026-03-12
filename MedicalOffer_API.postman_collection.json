@@ -294,6 +294,582 @@
                 }
             ],
             "description": "Endpoints for retrieving localized home page dashboard content."
+        },
+        {
+            "name": "Categories",
+            "item": [
+                {
+                    "name": "Get Categories",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ar",
+                                "type": "text",
+                                "description": "Language for the response (ar or en)"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/categories",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "categories"]
+                        },
+                        "description": "Retrieve all active categories with translations.\n\n**Features:**\n- Returns only active categories\n- Includes translated names based on Accept-Language header\n- Returns category icons"
+                    },
+                    "response": [
+                        {
+                            "name": "Categories Success (Arabic)",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    { "key": "Accept-Language", "value": "ar" }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/categories",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "categories"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم استرجاع الأقسام بنجاح.\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"الصيدليات\",\n            \"icon\": \"http://127.0.0.1:8000/storage/categories/pharma.png\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"العيادات\",\n            \"icon\": \"http://127.0.0.1:8000/storage/categories/clinics.png\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"المستشفيات\",\n            \"icon\": \"http://127.0.0.1:8000/storage/categories/hospitals.png\"\n        }\n    ]\n}"
+                        },
+                        {
+                            "name": "Categories Success (English)",
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Categories retrieved successfully.\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Pharmacies\",\n            \"icon\": \"http://127.0.0.1:8000/storage/categories/pharma.png\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Clinics\",\n            \"icon\": \"http://127.0.0.1:8000/storage/categories/clinics.png\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Hospitals\",\n            \"icon\": \"http://127.0.0.1:8000/storage/categories/hospitals.png\"\n        }\n    ]\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Endpoints for managing categories."
+        },
+        {
+            "name": "Providers",
+            "item": [
+                {
+                    "name": "Get Providers",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ar",
+                                "type": "text",
+                                "description": "Language for the response (ar or en)"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/providers",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "providers"]
+                        },
+                        "description": "Retrieve paginated list of providers.\n\n**Features:**\n- Paginated response (15 items per page)\n- Includes translations, country, and branches\n- Supports standard pagination parameters (page, per_page)"
+                    },
+                    "response": [
+                        {
+                            "name": "Providers Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    { "key": "Accept-Language", "value": "ar" }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/providers",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "providers"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم استرجاع مقدمي الخدمة بنجاح.\",\n    \"data\": {\n        \"data\": [\n            {\n                \"id\": 1,\n                \"name\": \"صيدلية النصر\",\n                \"title\": \"Pharmacy\",\n                \"description\": \"أفضل الصيدليات في المدينة\",\n                \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/pharmacy1.png\",\n                \"rating\": 4.5,\n                \"reviews_count\": 120,\n                \"max_discount\": 30,\n                \"country\": {\n                    \"id\": 1,\n                    \"name\": \"مصر\",\n                    \"flag\": \"http://127.0.0.1:8000/storage/flags/eg.png\"\n                },\n                \"branches\": [\n                    {\n                        \"id\": 1,\n                        \"name\": \"فرع القاهرة\",\n                        \"address\": \"شارع مصطفى النحاس\",\n                        \"latitude\": 30.0444,\n                        \"longitude\": 31.2357\n                    }\n                ]\n            }\n        ],\n        \"links\": {\n            \"first\": \"http://127.0.0.1:8000/api/providers?page=1\",\n            \"last\": \"http://127.0.0.1:8000/api/providers?page=5\",\n            \"prev\": null,\n            \"next\": \"http://127.0.0.1:8000/api/providers?page=2\"\n        },\n        \"meta\": {\n            \"current_page\": 1,\n            \"from\": 1,\n            \"last_page\": 5,\n            \"links\": [\n                {\"url\": \"http://127.0.0.1:8000/api/providers?page=1\", \"label\": \"1\", \"active\": true},\n                {\"url\": \"http://127.0.0.1:8000/api/providers?page=2\", \"label\": \"2\", \"active\": false}\n            ],\n            \"path\": \"http://127.0.0.1:8000/api/providers\",\n            \"per_page\": 15,\n            \"to\": 15,\n            \"total\": 75\n        }\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Provider Details",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ar",
+                                "type": "text",
+                                "description": "Language for the response (ar or en)"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/providers/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "providers", "1"]
+                        },
+                        "description": "Retrieve detailed information about a specific provider.\n\n**Includes:**\n- Provider translations\n- Country information\n- All branches\n- Reviews and ratings"
+                    },
+                    "response": [
+                        {
+                            "name": "Provider Details Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    { "key": "Accept-Language", "value": "ar" }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/providers/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "providers", "1"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم استرجاع مقدم الخدمة بنجاح.\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"صيدلية النصر\",\n        \"title\": \"Pharmacy\",\n        \"description\": \"أفضل الصيدليات في المدينة\",\n        \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/pharmacy1.png\",\n        \"rating\": 4.5,\n        \"reviews_count\": 120,\n        \"max_discount\": 30,\n        \"country\": {\n            \"id\": 1,\n            \"name\": \"مصر\",\n            \"flag\": \"http://127.0.0.1:8000/storage/flags/eg.png\"\n        },\n        \"branches\": [\n            {\n                \"id\": 1,\n                \"name\": \"فرع القاهرة\",\n                \"address\": \"شارع مصطفى النحاس\",\n                \"latitude\": 30.0444,\n                \"longitude\": 31.2357\n            },\n            {\n                \"id\": 2,\n                \"name\": \"فرع الجيزة\",\n                \"address\": \"شارع فيصل\",\n                \"latitude\": 29.9833,\n                \"longitude\": 30.9420\n            }\n        ],\n        \"reviews\": [\n            {\n                \"id\": 1,\n                \"user_name\": \"أحمد محمد\",\n                \"rating\": 5,\n                \"comment\": \"خدمة ممتازة واسعار مناسبة\",\n                \"created_at\": \"2024-03-10T10:30:00Z\"\n            }\n        ]\n    }\n}"
+                        },
+                        {
+                            "name": "Provider Not Found",
+                            "status": "Not Found",
+                            "code": 404,
+                            "body": "{\n    \"success\": false,\n    \"message\": \"مقدم الخدمة غير موجود.\",\n    \"data\": null\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Endpoints for managing providers."
+        },
+        {
+            "name": "Offers",
+            "item": [
+                {
+                    "name": "Get Offers",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ar",
+                                "type": "text",
+                                "description": "Language for the response (ar or en)"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/offers",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "offers"]
+                        },
+                        "description": "Retrieve paginated list of offers.\n\n**Features:**\n- Paginated response (15 items per page)\n- Includes translations, images, and provider information\n- Supports standard pagination parameters"
+                    },
+                    "response": [
+                        {
+                            "name": "Offers Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    { "key": "Accept-Language", "value": "ar" }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/offers",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "offers"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم استرجاع العروض بنجاح.\",\n    \"data\": {\n        \"data\": [\n            {\n                \"id\": 1,\n                \"name\": \"خصم 50% على الجلدية\",\n                \"description\": \"جلسة واحدة بخصم 50%\",\n                \"discount_percent\": 50,\n                \"image\": \"http://127.0.0.1:8000/storage/offers/skin1.jpg\",\n                \"rating\": 4.8,\n                \"reviews_count\": 89,\n                \"provider\": {\n                    \"id\": 1,\n                    \"name\": \"عيادة الجلدية\",\n                    \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/clinic1.png\",\n                    \"address\": \"القاهرة\"\n                }\n            }\n        ],\n        \"links\": {\n            \"first\": \"http://127.0.0.1:8000/api/offers?page=1\",\n            \"last\": \"http://127.0.0.1:8000/api/offers?page=10\",\n            \"prev\": null,\n            \"next\": \"http://127.0.0.1:8000/api/offers?page=2\"\n        },\n        \"meta\": {\n            \"current_page\": 1,\n            \"from\": 1,\n            \"last_page\": 10,\n            \"links\": [\n                {\"url\": \"http://127.0.0.1:8000/api/offers?page=1\", \"label\": \"1\", \"active\": true},\n                {\"url\": \"http://127.0.0.1:8000/api/offers?page=2\", \"label\": \"2\", \"active\": false}\n            ],\n            \"path\": \"http://127.0.0.1:8000/api/offers\",\n            \"per_page\": 15,\n            \"to\": 15,\n            \"total\": 150\n        }\n    }\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Offer Details",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ar",
+                                "type": "text",
+                                "description": "Language for the response (ar or en)"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/offers/1",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "offers", "1"]
+                        },
+                        "description": "Retrieve detailed information about a specific offer.\n\n**Includes:**\n- Offer translations\n- All images\n- Provider information\n- Reviews and ratings"
+                    },
+                    "response": [
+                        {
+                            "name": "Offer Details Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    { "key": "Accept-Language", "value": "ar" }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/offers/1",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "offers", "1"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم استرجاع العرض بنجاح.\",\n    \"data\": {\n        \"id\": 1,\n        \"name\": \"خصم 50% على الجلدية\",\n        \"description\": \"جلسة واحدة بخصم 50%\",\n        \"discount_percent\": 50,\n        \"image\": \"http://127.0.0.1:8000/storage/offers/skin1.jpg\",\n        \"rating\": 4.8,\n        \"reviews_count\": 89,\n        \"provider\": {\n            \"id\": 1,\n            \"name\": \"عيادة الجلدية\",\n            \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/clinic1.png\",\n            \"address\": \"القاهرة\"\n        },\n        \"images\": [\n            \"http://127.0.0.1:8000/storage/offers/skin1.jpg\",\n            \"http://127.0.0.1:8000/storage/offers/skin2.jpg\"\n        ],\n        \"reviews\": [\n            {\n                \"id\": 1,\n                \"user_name\": \"سارة أحمد\",\n                \"rating\": 5,\n                \"comment\": \"نتيجة رائعة وخدمة ممتازة\",\n                \"created_at\": \"2024-03-08T14:20:00Z\"\n            }\n        ]\n    }\n}"
+                        },
+                        {
+                            "name": "Offer Not Found",
+                            "status": "Not Found",
+                            "code": 404,
+                            "body": "{\n    \"success\": false,\n    \"message\": \"العرض غير موجود.\",\n    \"data\": null\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Endpoints for managing offers."
+        },
+        {
+            "name": "Locations",
+            "item": [
+                {
+                    "name": "Get Countries",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ar",
+                                "type": "text",
+                                "description": "Language for the response (ar or en)"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/countries",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "countries"]
+                        },
+                        "description": "Retrieve all countries with translations and flags."
+                    },
+                    "response": [
+                        {
+                            "name": "Countries Success (Arabic)",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    { "key": "Accept-Language", "value": "ar" }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/countries",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "countries"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم استرجاع الدول بنجاح.\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"مصر\",\n            \"flag\": \"http://127.0.0.1:8000/storage/flags/eg.png\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"السعودية\",\n            \"flag\": \"http://127.0.0.1:8000/storage/flags/sa.png\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"الإمارات\",\n            \"flag\": \"http://127.0.0.1:8000/storage/flags/ae.png\"\n        }\n    ]\n}"
+                        },
+                        {
+                            "name": "Countries Success (English)",
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Countries retrieved successfully.\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Egypt\",\n            \"flag\": \"http://127.0.0.1:8000/storage/flags/eg.png\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Saudi Arabia\",\n            \"flag\": \"http://127.0.0.1:8000/storage/flags/sa.png\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"UAE\",\n            \"flag\": \"http://127.0.0.1:8000/storage/flags/ae.png\"\n        }\n    ]\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Get Cities",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ar",
+                                "type": "text",
+                                "description": "Language for the response (ar or en)"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/cities",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "cities"]
+                        },
+                        "description": "Retrieve all cities with translations.\n\n**Note:** Cities are returned without country association in this endpoint."
+                    },
+                    "response": [
+                        {
+                            "name": "Cities Success (Arabic)",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    { "key": "Accept-Language", "value": "ar" }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/cities",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "cities"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم استرجاع المدن بنجاح.\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"القاهرة\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"الجيزة\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"الإسكندرية\"\n        },\n        {\n            \"id\": 4,\n            \"name\": \"الرياض\"\n        },\n        {\n            \"id\": 5,\n            \"name\": \"دبي\"\n        }\n    ]\n}"
+                        },
+                        {
+                            "name": "Cities Success (English)",
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Cities retrieved successfully.\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Cairo\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Giza\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Alexandria\"\n        },\n        {\n            \"id\": 4,\n            \"name\": \"Riyadh\"\n        },\n        {\n            \"id\": 5,\n            \"name\": \"Dubai\"\n        }\n    ]\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Endpoints for managing countries and cities."
+        },
+        {
+            "name": "Favorites",
+            "item": [
+                {
+                    "name": "Get Favorites",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ar",
+                                "type": "text",
+                                "description": "Language for the response (ar or en)"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/favorites",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "favorites"]
+                        },
+                        "description": "Retrieve user's favorite offers and providers.\n\n**Requires:** Bearer token authentication"
+                    },
+                    "response": [
+                        {
+                            "name": "Favorites Success",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    { "key": "Accept-Language", "value": "ar" }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/favorites",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "favorites"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم استرجاع المفضلة بنجاح.\",\n    \"data\": {\n        \"offers\": [\n            {\n                \"id\": 1,\n                \"name\": \"خصم 50% على الجلدية\",\n                \"description\": \"جلسة واحدة بخصم 50%\",\n                \"discount_percent\": 50,\n                \"image\": \"http://127.0.0.1:8000/storage/offers/skin1.jpg\",\n                \"rating\": 4.8,\n                \"reviews_count\": 89,\n                \"provider\": {\n                    \"id\": 1,\n                    \"name\": \"عيادة الجلدية\",\n                    \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/clinic1.png\",\n                    \"address\": \"القاهرة\"\n                }\n            }\n        ],\n        \"providers\": [\n            {\n                \"id\": 1,\n                \"name\": \"صيدلية النصر\",\n                \"title\": \"Pharmacy\",\n                \"description\": \"أفضل الصيدليات في المدينة\",\n                \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/pharmacy1.png\",\n                \"rating\": 4.5,\n                \"reviews_count\": 120,\n                \"max_discount\": 30,\n                \"country\": {\n                    \"id\": 1,\n                    \"name\": \"مصر\",\n                    \"flag\": \"http://127.0.0.1:8000/storage/flags/eg.png\"\n                }\n            }\n        ]\n    }\n}"
+                        },
+                        {
+                            "name": "No Authentication",
+                            "status": "Unauthorized",
+                            "code": 401,
+                            "body": "{\n    \"success\": false,\n    \"message\": \"يرجى تسجيل الدخول أولاً.\",\n    \"data\": null\n}"
+                        }
+                    ]
+                },
+                {
+                    "name": "Toggle Favorite",
+                    "request": {
+                        "auth": {
+                            "type": "bearer",
+                            "bearer": [
+                                {
+                                    "key": "token",
+                                    "value": "{{auth_token}}",
+                                    "type": "string"
+                                }
+                            ]
+                        },
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"offer_id\": 1\n}",
+                            "options": {
+                                "raw": {
+                                    "language": "json"
+                                }
+                            }
+                        },
+                        "url": {
+                            "raw": "{{base_url}}/api/favorites/toggle",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "favorites", "toggle"]
+                        },
+                        "description": "Toggle an offer or provider as favorite.\n\n**Parameters:**\n- `offer_id` (optional): ID of the offer to toggle\n- `provider_id` (optional): ID of the provider to toggle\n\n**Note:** Either offer_id or provider_id must be provided, but not both."
+                    },
+                    "response": [
+                        {
+                            "name": "Add to Favorites Success",
+                            "originalRequest": {
+                                "method": "POST",
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\n    \"offer_id\": 1\n}"
+                                },
+                                "url": {
+                                    "raw": "{{base_url}}/api/favorites/toggle",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "favorites", "toggle"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تمت إضافة العرض إلى المفضلة.\",\n    \"data\": {\n        \"status\": \"added\",\n        \"offer_id\": 1\n    }\n}"
+                        },
+                        {
+                            "name": "Remove from Favorites Success",
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تمت إزالة العرض من المفضلة.\",\n    \"data\": {\n        \"status\": \"removed\",\n        \"offer_id\": 1\n    }\n}"
+                        },
+                        {
+                            "name": "Add Provider to Favorites",
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تمت إضافة مقدم الخدمة إلى المفضلة.\",\n    \"data\": {\n        \"status\": \"added\",\n        \"provider_id\": 1\n    }\n}"
+                        },
+                        {
+                            "name": "Validation Error",
+                            "status": "Unprocessable Entity",
+                            "code": 422,
+                            "body": "{\n    \"success\": false,\n    \"message\": \"حقل العرض مطلوب.\",\n    \"errors\": {\n        \"offer_id\": [\"حقل العرض مطلوب.\"]\n    }\n}"
+                        },
+                        {
+                            "name": "No Authentication",
+                            "status": "Unauthorized",
+                            "code": 401,
+                            "body": "{\n    \"success\": false,\n    \"message\": \"يرجى تسجيل الدخول أولاً.\",\n    \"data\": null\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Endpoints for managing user favorites."
+        },
+        {
+            "name": "Sections",
+            "item": [
+                {
+                    "name": "Get Sections",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Accept",
+                                "value": "application/json",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Accept-Language",
+                                "value": "ar",
+                                "type": "text",
+                                "description": "Language for the response (ar or en)"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/sections",
+                            "host": ["{{base_url}}"],
+                            "path": ["api", "sections"]
+                        },
+                        "description": "Retrieve active sections for organizing home page content.\n\n**Features:**\n- Returns sections with their associated providers and offers\n- Used for organizing content on the home page\n- Includes translated section names"
+                    },
+                    "response": [
+                        {
+                            "name": "Sections Success (Arabic)",
+                            "originalRequest": {
+                                "method": "GET",
+                                "header": [
+                                    { "key": "Accept-Language", "value": "ar" }
+                                ],
+                                "url": {
+                                    "raw": "{{base_url}}/api/sections",
+                                    "host": ["{{base_url}}"],
+                                    "path": ["api", "sections"]
+                                }
+                            },
+                            "status": "OK",
+                            "code": 200,
+                            "_postman_previewlanguage": "json",
+                            "body": "{\n    \"success\": true,\n    \"message\": \"تم استرجاع الأقسام بنجاح.\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"نخبة الأطباء\",\n            \"type\": \"doctors\",\n            \"providers\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"دكتور أحمد\",\n                    \"title\": \"جراح تجميلي\",\n                    \"description\": \"أفضل جراح تجميلي في المدينة\",\n                    \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/doctor1.png\",\n                    \"rating\": 4.9,\n                    \"reviews_count\": 150,\n                    \"max_discount\": 25,\n                    \"address\": \"القاهرة\"\n                }\n            ],\n            \"offers\": []\n        },\n        {\n            \"id\": 2,\n            \"name\": \"مراكز طبية\",\n            \"type\": \"centers\",\n            \"providers\": [\n                {\n                    \"id\": 2,\n                    \"name\": \"مركز القاهرة الطبي\",\n                    \"title\": \"Medical Center\",\n                    \"description\": \"أفضل المراكز الطبية\",\n                    \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/center1.png\",\n                    \"rating\": 4.7,\n                    \"reviews_count\": 200,\n                    \"max_discount\": 40,\n                    \"address\": \"القاهرة\"\n                }\n            ],\n            \"offers\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"خصم 50% على الجلدية\",\n                    \"description\": \"جلسة واحدة بخصم 50%\",\n                    \"discount_percent\": 50,\n                    \"image\": \"http://127.0.0.1:8000/storage/offers/skin1.jpg\",\n                    \"rating\": 4.8,\n                    \"reviews_count\": 89,\n                    \"provider\": {\n                        \"id\": 2,\n                        \"name\": \"مركز القاهرة الطبي\",\n                        \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/center1.png\",\n                        \"address\": \"القاهرة\"\n                    }\n                }\n            ]\n        }\n    ]\n}"
+                        },
+                        {
+                            "name": "Sections Success (English)",
+                            "status": "OK",
+                            "code": 200,
+                            "body": "{\n    \"success\": true,\n    \"message\": \"Sections retrieved successfully.\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"Elite Doctors\",\n            \"type\": \"doctors\",\n            \"providers\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"Dr. Ahmed\",\n                    \"title\": \"Cosmetic Surgeon\",\n                    \"description\": \"Best cosmetic surgeon in the city\",\n                    \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/doctor1.png\",\n                    \"rating\": 4.9,\n                    \"reviews_count\": 150,\n                    \"max_discount\": 25,\n                    \"address\": \"Cairo\"\n                }\n            ],\n            \"offers\": []\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Medical Centers\",\n            \"type\": \"centers\",\n            \"providers\": [\n                {\n                    \"id\": 2,\n                    \"name\": \"Cairo Medical Center\",\n                    \"title\": \"Medical Center\",\n                    \"description\": \"Best medical centers\",\n                    \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/center1.png\",\n                    \"rating\": 4.7,\n                    \"reviews_count\": 200,\n                    \"max_discount\": 40,\n                    \"address\": \"Cairo\"\n                }\n            ],\n            \"offers\": [\n                {\n                    \"id\": 1,\n                    \"name\": \"50% off on Dermatology\",\n                    \"description\": \"One session with 50% discount\",\n                    \"discount_percent\": 50,\n                    \"image\": \"http://127.0.0.1:8000/storage/offers/skin1.jpg\",\n                    \"rating\": 4.8,\n                    \"reviews_count\": 89,\n                    \"provider\": {\n                        \"id\": 2,\n                        \"name\": \"Cairo Medical Center\",\n                        \"logo\": \"http://127.0.0.1:8000/storage/providers/logos/center1.png\",\n                        \"address\": \"Cairo\"\n                    }\n                }\n            ]\n        }\n    ]\n}"
+                        }
+                    ]
+                }
+            ],
+            "description": "Endpoints for managing sections."
         }
     ],
     "variable": [

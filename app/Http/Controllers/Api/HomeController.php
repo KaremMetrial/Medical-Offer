@@ -8,19 +8,31 @@ use App\Http\Resources\ProviderStoryResource;
 use App\Http\Resources\HomeStoryResource;
 use App\Http\Resources\BannerResource;
 use App\Http\Resources\CategoryResource;
-use App\Http\Resources\OfferResource;
-use App\Http\Resources\ProviderResource;
-use App\Models\Country;
-use App\Models\Provider;
-use App\Models\Story;
-use App\Models\Banner;
-use App\Models\Category;
-use App\Models\Offer;
 
+use App\Http\Resources\ProviderResource;
+use App\Http\Resources\AppBarResource;
+use App\Http\Resources\HomeResource;
+use App\Http\Resources\SectionResource;
+use App\Repositories\Contracts\BannerRepositoryInterface;
+use App\Repositories\Contracts\CategoryRepositoryInterface;
+use App\Repositories\Contracts\SectionRepositoryInterface;
+use App\Repositories\Contracts\CountryRepositoryInterface;
+use App\Repositories\Contracts\OfferRepositoryInterface;
+use App\Repositories\Contracts\ProviderRepositoryInterface;
+use App\Enums\SectionType;
 use Illuminate\Support\Facades\Cache;
 
 class HomeController extends BaseController
 {
+    public function __construct(
+        protected  BannerRepositoryInterface $bannerRepository,
+        protected  CategoryRepositoryInterface $categoryRepository,
+        protected  SectionRepositoryInterface $sectionRepository,
+        protected  OfferRepositoryInterface $offerRepository,
+        protected  ProviderRepositoryInterface $providerRepository,
+        protected  CountryRepositoryInterface $countryRepository
+    ) {}
+
     /**
      * Handle the home page data request.
      */
@@ -29,157 +41,132 @@ class HomeController extends BaseController
         $user = auth('sanctum')->user();
         $locale = app()->getLocale();
 
-        // Cache non-user-specific data for 30 minutes to improve performance
-        $sharedData = Cache::remember("home_shared_data_{$locale}", now()->addMinutes(30), function () {
+        // Cache non-user-specific data for 30 minutes
+        $sharedData = Cache::remember("home_shared_data_{$locale}_v4", now()->addMinutes(30), function () {
+            $sectionsAndFeatured = $this->getSectionsAndFeaturedData();
+            
             return [
                 'stories' => $this->getStoriesData(),
                 'banners' => $this->getBannersData(),
-                'categories' => $this->getCategoriesData(),
-                'elite_doctors' => $this->getEliteDoctorsData(),
-                'medical_centers' => $this->getMedicalCentersData(),
-                'care_offers' => $this->getCareOffersData(),
+                'sections' => $sectionsAndFeatured['sections'],
+                'membership_banner' => $this->getMembershipBannerData(),
+                'featured' => $sectionsAndFeatured['featured'],
             ];
         });
 
         return $this->successResponse(
-            array_merge([
+            new HomeResource(array_merge([
                 'appbar' => $this->getAppBarData($user),
-            ], $sharedData),
+            ], $sharedData)),
             __('home.retrieved_successfully')
         );
     }
 
     /**
-     * Get data for the top app bar.
+     * Get app bar data.
      */
-    private function getAppBarData($user = null): array
+    private function getAppBarData($user = null): AppBarResource
     {
         if ($user) {
-            return [
-                'title' => __('home.welcome_back', ['name' => $user->name]),
-                'subtitle' => __('home.good_day'),
-                'avatar' => $user->avatar_url,
-                'unread_notifications' => $user->unreadNotificationsCount(),
-                'country_flag' => $user->country?->flag_url,
-                'search_placeholder' => __('home.search_placeholder'),
-            ];
+            return new AppBarResource($user);
         }
 
-        $defaultCountryId = config('settings.default_country_id', 1);
-        $defaultCountry = Country::find($defaultCountryId) ?? Country::first();
+        $defaultCountry = $this->countryRepository->getDefaultCountry();
 
-        return [
+        return new AppBarResource([
             'title' => __('home.welcome_guest'),
             'subtitle' => __('home.guest_subtitle'),
             'avatar' => asset('storage/users/avatars/avatar.jpg'),
             'unread_notifications' => 0,
             'country_flag' => $defaultCountry?->flag_url,
             'search_placeholder' => __('home.search_placeholder'),
-        ];
+        ]);
     }
 
     /**
-     * Get active stories from providers.
+     * Get stories.
      */
     private function getStoriesData()
     {
-        $providers = Provider::with(['stories' => fn($q) => $q->active()])
-            ->whereHas('stories', fn($q) => $q->active())
-            ->get();
-
+        $providers = $this->providerRepository->getWithActiveStories();
         return ProviderStoryResource::collection($providers)->resolve();
     }
 
     /**
-     * Get active banners for slider.
+     * Get banners.
      */
     private function getBannersData()
     {
-        $banners = Banner::with('translations')
-            ->where('is_active', true)
-            ->where('start_date', '<=', now())
-            ->where('end_date', '>=', now())
-            ->orderBy('sort_order')
-            ->get();
-
+        $banners = $this->bannerRepository->getActiveBanners();
         return BannerResource::collection($banners)->resolve();
     }
 
     /**
-     * Get main categories for home page.
+     * Build dynamic sections and featured blocks.
      */
-    private function getCategoriesData()
+    private function getSectionsAndFeaturedData()
     {
-        $categories = Category::with('translations')
-            ->where('is_active', true)
-            ->where('is_show', true)
-            ->orderBy('sort_order')
-            ->get();
+        // Get sections with properly eager loaded relationships to avoid N+1 queries
+        $sections = $this->sectionRepository->getHomeDataSections();
+        
+        $sectionsData = SectionResource::collection($sections)->resolve();
+        $featured = [];
+        
+        foreach ($sections as $section) {
+            if ($section->providers->isNotEmpty()) {
+                $items = ProviderResource::collection($section->providers->take(10))->resolve();
+                
+                if (!empty($items)) {
+                    $labelPrefix = match($section->type) {
+                        SectionType::DOCTORS => __('home.sections.elite_doctors'),
+                        SectionType::CENTERS => __('home.sections.medical_centers'),
+                        default => $section->name
+                    };
 
+                    $featured[] = [
+                        'label' => $labelPrefix,
+                        'section_type' => $section->type->value,
+                        'items' => $items
+                    ];
+                }
+            }
+
+            // Offers block — providers that have active published offers in this section
+            if ($section->offers->isNotEmpty()) {
+                // Get the unique providers that own these offers
+                $providerIds = $section->offers->pluck('provider_id')->unique();
+                $providersWithOffers = $section->providers->whereIn('id', $providerIds);
+
+                $items = ProviderResource::collection($providersWithOffers->take(10))->resolve();
+
+                if (!empty($items)) {
+                    $featured[] = [
+                        'label' => __('home.sections.care_offers'),
+                        'section_type' => $section->type->value,
+                        'items' => $items
+                    ];
+                }
+            }
+        }
+        
         return [
-            'label' => __('home.sections.categories'),
-            'items' => CategoryResource::collection($categories)->resolve(),
+            'sections' => $sectionsData,
+            'featured' => $featured
         ];
     }
 
     /**
-     * Get elite (verified/highly rated) doctors.
+     * Get static membership banner data based on translation.
      */
-    private function getEliteDoctorsData()
+    private function getMembershipBannerData()
     {
-        $doctors = Provider::with(['translations', 'reviews', 'country'])
-            ->with(['branches' => fn($q) => $q->where('is_main', true)])
-            ->where('status', 'active')
-            ->where('is_varified', true)
-            ->withCount('reviews')
-            ->orderByDesc('reviews_count')
-            ->take(10)
-            ->get();
-
         return [
-            'label' => __('home.sections.elite_doctors'),
-            'items' => ProviderResource::collection($doctors)->resolve(),
-        ];
-    }
-
-    /**
-     * Get medical centers.
-     */
-    private function getMedicalCentersData()
-    {
-        $centers = Provider::with(['translations', 'reviews', 'country'])
-            ->with(['branches' => fn($q) => $q->where('is_main', true)])
-            ->where('status', 'active')
-            // Add any logic to filter by 'center' type if available in the future
-            ->latest()
-            ->take(10)
-            ->get();
-
-        return [
-            'label' => __('home.sections.medical_centers'),
-            'items' => ProviderResource::collection($centers)->resolve(),
-        ];
-    }
-
-    /**
-     * Get Care & Beauty offers for home page.
-     */
-    private function getCareOffersData()
-    {
-        $offers = Offer::with(['translations', 'images', 'provider' => function ($q) {
-            $q->with(['translations', 'country'])->with(['branches' => fn($qb) => $qb->where('is_main', true)]);
-        }])
-            ->where('status', 'published')
-            ->where('show_in_home', true)
-            ->where('start_date', '<=', now())
-            ->where('end_date', '>=', now())
-            ->latest()
-            ->take(10)
-            ->get();
-
-        return [
-            'label' => __('home.sections.care_offers'),
-            'items' => OfferResource::collection($offers)->resolve(),
+            'title' => __('home.membership_banner.title'),
+            'subtitle' => __('home.membership_banner.subtitle'),
+            'button_text' => __('home.membership_banner.button_text'),
+            'background_gradient' => 'linear-gradient(90deg, #00BFFF 10%, #008AB8 65%, #005977 100%)',
+            'button_bg_color' => '#FFC107',
+            'action_type' => 'membership_details',
         ];
     }
 }

@@ -16,4 +16,10 @@ return [
     'login_successfully' => 'تم تسجيل الدخول بنجاح.',
     'registration_successfully' => 'تم التسجيل بنجاح.',
     'something_went_wrong'  => 'حدث خطأ ما، يرجى المحاولة لاحقاً.',
+    'categories'            => 'التصنيفات',
+    'cities'                => 'المدن',
+    'countries'             => 'الدول',
+    'offers'                => 'العروض',
+    'providers'             => 'المزودين',
+    'sections'              => 'الأقسام',
 ];

@@ -39,7 +39,9 @@ class MemberPlanForm
                         ->schema([
                             Select::make('country_id')
                                 ->label(__('filament.fields.country'))
-                                ->options(fn() => Country::with('translations')->get()->pluck('name', 'id'))
+                                ->relationship('country', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => Country::all()->pluck('name', 'id'))
                                 ->searchable()
                                 ->nullable()
                                 ->live()

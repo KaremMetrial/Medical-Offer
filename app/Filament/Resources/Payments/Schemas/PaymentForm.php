@@ -50,7 +50,9 @@ class PaymentForm
                                 ->required(),
                             Select::make('provider_id')
                                 ->label(__('filament.fields.provider'))
-                                ->options(fn() => Provider::with('translations')->get()->pluck('name', 'id'))
+                                ->relationship('provider', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => Provider::all()->pluck('name', 'id'))
                                 ->searchable()
                                 ->live(),
                         ])->columns(3),

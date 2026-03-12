@@ -8,12 +8,12 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Section as UISection;
 use Filament\Schemas\Components\Group;
 use App\Filament\Components\TranslatableFields;
 use App\Models\Category;
 use App\Models\Country;
-
+use App\Models\Section as SectionDB;
 use App\Traits\UploadTrait;
 
 class ProviderForm
@@ -25,7 +25,7 @@ class ProviderForm
         return $schema
             ->components([
                 Group::make([
-                    Section::make(__('filament.sections.translations'))
+                    UISection::make(__('filament.sections.translations'))
                         ->schema([
                             TranslatableFields::make([
                                 'name' => [
@@ -46,8 +46,16 @@ class ProviderForm
                             ]),
                         ]),
 
-                    Section::make(__('filament.sections.general'))
+                    UISection::make(__('filament.sections.general'))
                         ->schema([
+                            Select::make('section_id')
+                                ->label(__('filament.section.label'))
+                                ->relationship('section', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => SectionDB::all()->pluck('name', 'id'))    
+                                ->searchable()
+                                ->placeholder(__('filament.fields.select_section')),
+                                
                             TextInput::make('phone')
                                 ->label(__('filament.fields.phone'))
                                 ->tel()
@@ -59,34 +67,35 @@ class ProviderForm
                                 ->label(__('filament.fields.country'))
                                 ->relationship('country', 'id')
                                 ->getOptionLabelFromRecordUsing(fn(Country $record) => $record->name)
-                                ->options(fn() => Country::with('translations')->get()->pluck('name', 'id'))
+                                ->options(fn() => Country::all()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),
                             Select::make('categories')
                                 ->label(__('filament.sections.categories'))
                                 ->relationship('categories', 'id')
                                 ->getOptionLabelFromRecordUsing(fn(Category $record) => $record->name)
+                                ->options(fn() => Category::all()->pluck('name', 'id'))
                                 ->multiple()
                                 ->preload(),
                         ])->columns(2),
                 ])->columnSpan(3),
 
                 Group::make([
-                    Section::make(__('filament.sections.media'))
+                    UISection::make(__('filament.sections.media'))
                         ->schema([
                             FileUpload::make('logo')
                                 ->label(__('filament.fields.logo'))
                                 ->image()
                                 ->directory('providers/logos')
-                                ->storage('public'),
+                                ->disk('public'),
                             FileUpload::make('cover')
                                 ->label(__('filament.fields.cover'))
                                 ->image()
                                 ->directory('providers/covers')
-                                ->storage('public'),
+                                ->disk('public'),
                         ])->columns(2),
 
-                    Section::make(__('filament.sections.settings'))
+                    UISection::make(__('filament.sections.settings'))
                         ->schema([
                             Select::make('status')
                                 ->label(__('filament.fields.status'))

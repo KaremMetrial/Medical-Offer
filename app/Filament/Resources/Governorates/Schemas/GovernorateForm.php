@@ -32,6 +32,8 @@ class GovernorateForm
                         ->schema([
                             Select::make('country_id')
                                 ->label(__('filament.fields.country'))
+                                ->relationship('country', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
                                 ->options(fn() => Country::all()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),

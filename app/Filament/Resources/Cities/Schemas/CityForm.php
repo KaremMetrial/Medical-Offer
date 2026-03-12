@@ -32,6 +32,8 @@ class CityForm
                         ->schema([
                             Select::make('governorate_id')
                                 ->label(__('filament.fields.governorate'))
+                                ->relationship('governorate', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
                                 ->options(fn() => Governorate::all()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),

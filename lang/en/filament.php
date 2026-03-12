@@ -10,8 +10,12 @@ return [
         'plural_label' => 'Stories',
     ],
     'category' => [
-        'label' => 'Category',
-        'plural_label' => 'Categories',
+        'label' => 'Sub-Category',
+        'plural_label' => 'Sub-Categories',
+    ],
+    'section' => [
+        'label' => 'Main Section',
+        'plural_label' => 'Main Sections',
     ],
     'country' => [
         'label' => 'Country',
@@ -74,7 +78,8 @@ return [
         'provider' => 'Provider',
         'category' => 'Category',
         'parent' => 'Parent Category',
-        'select_parent' => 'Select a parent category',
+        'select_section' => 'Select a Main Section',
+        'select_parent' => 'Select a Sub-Category',
         'icon' => 'Icon',
         'is_show' => 'Show in Menu',
         'image_path' => 'Image Path',
@@ -139,6 +144,7 @@ return [
         'views' => 'Views',
         'created_at' => 'Created At',
         'media_preview' => 'Media Preview',
+        'type' => 'Type',
     ],
     'nav' => [
         'group' => [
@@ -177,6 +183,12 @@ return [
             'paid' => 'Paid',
             'failed' => 'Failed',
             'refunded' => 'Refunded',
+        ],
+        'section_type' => [
+            'doctors' => 'Doctors',
+            'centers' => 'Medical Centers',
+            'labs' => 'Labs & Radiology',
+            'pharmacies' => 'Pharmacies',
         ],
     ],
 ];

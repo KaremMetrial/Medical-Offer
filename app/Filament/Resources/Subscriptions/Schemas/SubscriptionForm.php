@@ -21,12 +21,16 @@ class SubscriptionForm
                         ->schema([
                             Select::make('user_id')
                                 ->label(__('filament.fields.user'))
-                                ->options(fn() => User::where('is_active', true)->whereNotIn('role', ['admin', 'super_admin'])->get()->pluck('name', 'id'))
+                                ->relationship('user', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => User::where('is_active', true)->whereNotIn('role', ['admin', 'super_admin'])->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),
                             Select::make('plan_id')
                                 ->label(__('filament.fields.plan'))
-                                ->options(fn() => MemberPlan::with('translations')->get()->pluck('name', 'id'))
+                                ->relationship('plan', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => MemberPlan::all()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),
                         ])->columns(2),

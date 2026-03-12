@@ -51,12 +51,15 @@ class OfferForm
                             Select::make('provider_id')
                                 ->label(__('filament.fields.provider'))
                                 ->relationship('provider', 'id')
-                                ->options(fn() => Provider::get()->pluck('name', 'id'))
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => Provider::all()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),
                             Select::make('category_id')
                                 ->label(__('filament.fields.category'))
-                                ->options(fn() => Category::get()->pluck('name', 'id'))
+                                ->relationship('category', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => Category::all()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),
                             TextInput::make('discount_percent')
@@ -78,7 +81,7 @@ class OfferForm
                                         ->label(__('filament.fields.image'))
                                         ->image()
                                         ->directory('offers/images')
-                                        ->storage('public')
+                                        ->disk('public')
                                         ->required(),
                                 ])
                                 ->orderColumn('sort_order')

@@ -25,6 +25,8 @@ class StoryForm
                         ->schema([
                             Select::make('provider_id')
                                 ->label(__('filament.fields.provider'))
+                                ->relationship('provider', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
                                 ->options(fn() => Provider::all()->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),

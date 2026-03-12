@@ -43,17 +43,23 @@ class UserForm
                         ->schema([
                             Select::make('country_id')
                                 ->label(__('filament.fields.country'))
-                                ->options(fn() => Country::with('translations')->get()->pluck('name', 'id'))
+                                ->relationship('country', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => Country::all()->pluck('name', 'id'))
                                 ->searchable()
                                 ->live(),
                             Select::make('governorate_id')
                                 ->label(__('filament.fields.governorate'))
-                                ->options(fn(callable $get) => Governorate::where('country_id', $get('country_id'))->with('translations')->get()->pluck('name', 'id'))
+                                ->relationship('governorate', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn(callable $get) => Governorate::where('country_id', $get('country_id'))->pluck('name', 'id'))
                                 ->searchable()
                                 ->live(),
                             Select::make('city_id')
                                 ->label(__('filament.fields.city'))
-                                ->options(fn(callable $get) => City::where('governorate_id', $get('governorate_id'))->with('translations')->get()->pluck('name', 'id'))
+                                ->relationship('city', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn(callable $get) => City::where('governorate_id', $get('governorate_id'))->pluck('name', 'id'))
                                 ->searchable(),
                         ])->columns(3),
 

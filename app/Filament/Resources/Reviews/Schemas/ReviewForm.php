@@ -23,16 +23,22 @@ class ReviewForm
                         ->schema([
                             Select::make('user_id')
                                 ->label(__('filament.fields.user'))
-                                ->options(fn() => User::whereNotIn('role', ['admin', 'super_admin'])->get()->pluck('name', 'id'))
+                                ->relationship('user', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => User::whereNotIn('role', ['admin', 'super_admin'])->pluck('name', 'id'))
                                 ->searchable()
                                 ->required(),
                             Select::make('provider_id')
                                 ->label(__('filament.fields.provider'))
-                                ->options(fn() => Provider::with('translations')->get()->pluck('name', 'id'))
+                                ->relationship('provider', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => Provider::all()->pluck('name', 'id'))
                                 ->searchable(),
                             Select::make('offer_id')
                                 ->label(__('filament.fields.offer'))
-                                ->options(fn() => Offer::with('translations')->get()->pluck('name', 'id'))
+                                ->relationship('offer', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => Offer::all()->pluck('name', 'id'))
                                 ->searchable(),
                         ])->columns(3),
 
