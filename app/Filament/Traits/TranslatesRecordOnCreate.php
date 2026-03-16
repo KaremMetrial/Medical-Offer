@@ -40,6 +40,13 @@ trait TranslatesRecordOnCreate
                         continue;
                     }
 
+                    // Ensure array attributes (like JSON columns) are encoded for raw insertion
+                    foreach ($fields as $key => $value) {
+                        if (is_array($value)) {
+                            $fields[$key] = json_encode($value);
+                        }
+                    }
+
                     $insertData[] = array_merge($fields, [
                         'local' => $locale,
                         $foreignKey => $record->id,

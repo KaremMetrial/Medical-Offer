@@ -27,4 +27,19 @@ class OfferRepository extends BaseRepository implements OfferRepositoryInterface
             ->take($limit)
             ->get();
     }
+
+    public function getOffersByProviderId($id, $columns = ['*'], $relations = [])
+    {
+        return $this->model->with($relations)
+            ->where('provider_id', $id)
+            ->where('status', 'published')
+            // ->where('show_in_home', true)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            // ->withCount('reviews')
+            // ->withAvg('reviews', 'rating')
+            ->latest()
+            ->select($columns)
+            ->get();
+    }
 }

@@ -114,6 +114,8 @@ class AuthService
             'email'     => $data['email'] ?? null,
             'country_id' => $data['country_id'] ?? null,
             'city_id'    => $data['city_id'] ?? null,
+            'gender'     => $data['gender'] ?? null,
+            'nationality_id' => $data['nationality_id'] ?? null,
             'avatar'     => $data['avatar'] ?? null,
             'is_active'  => true,
             'role'       => 'user', // Default role

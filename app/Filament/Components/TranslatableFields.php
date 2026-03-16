@@ -3,10 +3,12 @@
 namespace App\Filament\Components;
 
 use App\Models\Language;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Forms\Components\MarkdownEditor;
 
 class TranslatableFields
 {
@@ -51,6 +53,31 @@ class TranslatableFields
                                 }
                             });
 
+                        break;
+                    case 'markdown_editor':
+                        $component = MarkdownEditor::make("{$attribute}:{$lang->code}")
+                            ->label("{$label} ({$lang->name})")
+                            ->default(fn($record) => $record?->translations->where('local', $lang->code)->first()?->$attribute)
+                            ->required(fn() => $lang->code === app()->getLocale())
+                            ->afterStateHydrated(function ($component, $state, $record) use ($attribute, $lang) {
+                                if ($record) {
+                                    $component->state(
+                                        $record->translations->where('local', $lang->code)->first()?->$attribute
+                                    );
+                                }
+                            });
+                        break;
+                    case 'tags':
+                        $component = TagsInput::make("{$attribute}:{$lang->code}")
+                            ->label("{$label} ({$lang->name})")
+                            ->default(fn($record) => $record?->translations->where('local', $lang->code)->first()?->$attribute)
+                            ->afterStateHydrated(function ($component, $state, $record) use ($attribute, $lang) {
+                                if ($record) {
+                                    $component->state(
+                                        $record->translations->where('local', $lang->code)->first()?->$attribute
+                                    );
+                                }
+                            });
                         break;
 
                     case 'text':

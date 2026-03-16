@@ -9,6 +9,11 @@ class Offer extends Model
 {
     use HasFactory;
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new \App\Scopes\OfferCountryScope());
+    }
+
     protected $fillable = [
         'provider_id',
         'category_id',

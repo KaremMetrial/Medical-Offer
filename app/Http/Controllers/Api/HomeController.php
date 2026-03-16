@@ -82,7 +82,7 @@ class HomeController extends BaseController
             'subtitle' => __('home.guest_subtitle'),
             'avatar' => asset('storage/users/avatars/avatar.jpg'),
             'unread_notifications' => 0,
-            'country_flag' => $defaultCountry?->flag_url,
+            'country_flag' => $defaultCountry?->src,
             'search_placeholder' => __('home.search_placeholder'),
         ]);
     }

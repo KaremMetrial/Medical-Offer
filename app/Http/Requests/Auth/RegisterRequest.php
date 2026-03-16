@@ -38,6 +38,8 @@ class RegisterRequest extends FormRequest
             'password'   => ['nullable', 'string', 'min:8', 'confirmed'],
             'country_id' => ['nullable', 'exists:countries,id'],
             'city_id'    => ['nullable', 'exists:cities,id'],
+            'gender'     => ['nullable', 'in:male,female'],
+            'nationality_id' => ['nullable', 'exists:nationalities,id'],
             'avatar'     => $this->imageRules(),
         ];
     }

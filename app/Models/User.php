@@ -30,6 +30,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         'parent_user_id',
         'nationality_id',
         'gender',
+        'balance',
         'is_active'
     ];
 
@@ -47,6 +48,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         'country_id' => 'integer',
         'governorate_id' => 'integer',
         'city_id' => 'integer',
+        'balance' => 'decimal:2',
         'is_active' => 'boolean',
         'gender' => 'string'
     ];
@@ -199,7 +201,7 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 
     public function getAvatarUrlAttribute(): ?string
     {
-        return $this->avatar ? Storage::disk('public')->url($this->avatar) : asset('storage/users/avatars/avatar.jpg');
+        return $this->avatar ? \Illuminate\Support\Facades\Storage::disk('public')->url($this->avatar) : asset('storage/users/avatars/avatar.jpg');
     }
 
     public function getImagePathAttribute(): ?string

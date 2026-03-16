@@ -149,6 +149,10 @@ return [
         'created_at' => 'Created At',
         'media_preview' => 'Media Preview',
         'type' => 'Type',
+        'number_of_buddies' => 'Number of Buddies',
+        'number_of_providers' => 'Number of Providers',
+        'number_of_visits' => 'Number of Visits',
+        'discount_percentage' => 'Discount Percentage',
     ],
     'nav' => [
         'group' => [

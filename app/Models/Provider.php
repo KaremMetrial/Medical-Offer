@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\Filterable;
+use App\Traits\BelongsToCountry;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Provider extends Model
 {
-    use HasFactory;
+    use HasFactory, Filterable, BelongsToCountry;
 
     protected $fillable = [
         'section_id',
@@ -102,11 +104,11 @@ class Provider extends Model
     public function translation($locale = null)
     {
         $locale = $locale ?? app()->getLocale();
-        
+
         if ($this->relationLoaded('translations')) {
             return $this->translations->firstWhere('local', $locale) ?? $this->translations->first();
         }
-        
+
         return $this->translations()->where('local', $locale)->first()
             ?? $this->translations()->first();
     }
@@ -135,7 +137,7 @@ class Provider extends Model
         if ($this->relationLoaded('branches')) {
             return $this->branches->firstWhere('is_main', true);
         }
-        
+
         // Fall back to query if not loaded
         return $this->branches()->where('is_main', true)->first();
     }
@@ -161,42 +163,6 @@ class Provider extends Model
         });
     }
 
-    public function scopeFilterBySection($query, $sectionType)
-    {
-        if (!$sectionType) return $query;
-        return $query->whereHas('section', fn($q) => $q->where('type', $sectionType));
-    }
-
-    public function scopeFilterByRating($query, $ratingType)
-    {
-        if (!$ratingType) return $query;
-        
-        $query->withAvg('reviews', 'rating');
-
-        return match ($ratingType) {
-            'five' => $query->having('reviews_avg_rating', '=', 5),
-            'four_and_above' => $query->having('reviews_avg_rating', '>=', 4),
-            'three_and_above' => $query->having('reviews_avg_rating', '>=', 3),
-            'two_and_above' => $query->having('reviews_avg_rating', '>=', 2),
-            default => $query
-        };
-    }
-
-    public function scopeFilterByDiscount($query, $discountType)
-    {
-        if (!$discountType) return $query;
-
-        return $query->whereHas('offers', function ($q) use ($discountType) {
-            match ($discountType) {
-                'ten_and_twenty' => $q->whereBetween('discount_percent', [10, 20]),
-                'twenty_and_forty' => $q->whereBetween('discount_percent', [20, 40]),
-                'forty_and_sixty' => $q->whereBetween('discount_percent', [40, 60]),
-                'sixty_and_eighty' => $q->whereBetween('discount_percent', [60, 80]),
-                'eighty_and_one_hundred' => $q->whereBetween('discount_percent', [80, 100]),
-                default => null
-            };
-        });
-    }
 
     public function getImagePathAttribute(): ?string
     {

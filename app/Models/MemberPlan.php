@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class MemberPlan extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\BelongsToCountry;
 
     protected $fillable = [
         'price',
@@ -68,6 +68,10 @@ class MemberPlan extends Model
         return $this->translation()?->name;
     }
 
+    public function getFeatureAttribute()
+    {
+        return $this->translation()?->feature;
+    }
     public function getLabelAttribute()
     {
         return $this->translation()?->label;
@@ -76,7 +80,17 @@ class MemberPlan extends Model
     // Check if plan has specific feature
     public function hasFeature($feature)
     {
-        return in_array($feature, $this->features_json ?? []);
+        if (is_null($this->features_json)) {
+            return false;
+        }
+
+        // Check if it's a key (for key-value pairs)
+        if (array_key_exists($feature, $this->features_json)) {
+            return true;
+        }
+
+        // Check if it's a value (for simple lists)
+        return in_array($feature, $this->features_json);
     }
     public function scopeSearchName($query, $search)
     {

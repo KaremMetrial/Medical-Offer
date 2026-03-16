@@ -19,12 +19,12 @@ class OfferResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'discount_percent' => $this->discount_percent,
-            'image' => $this->images->where('type', 'image')->first()?->src ?? $this->provider?->logo_url,
-            'rating' => (float) ($this->reviews_avg_rating ?? $this->reviews->avg('rating') ?? 0),
-            'reviews_count' => (int) ($this->reviews_count ?? $this->reviews->count()),
-            'provider_name' => $this->provider?->name,
-            'provider_logo' => $this->provider?->logo_url,
-            'address' => $this->provider?->mainBranch()?->address ?? $this->provider?->country?->name,
+            // 'image' => $this->images->where('type', 'image')->first()?->src ?? $this->provider?->logo_url,
+            // 'rating' => (float) ($this->reviews_avg_rating ?? $this->reviews->avg('rating') ?? 0),
+            // 'reviews_count' => (int) ($this->reviews_count ?? $this->reviews->count()),
+            // 'provider_name' => $this->provider?->name,
+            // 'provider_logo' => $this->provider?->logo_url,
+            // 'address' => $this->provider?->mainBranch()?->address ?? $this->provider?->country?->name,
         ];
     }
 }

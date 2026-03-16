@@ -16,16 +16,13 @@ class ProviderRepository extends BaseRepository implements ProviderRepositoryInt
     {
         return $this->model->with([
             'translations',
-            'stories' => function ($q) use ($user, $ip) {
-                $q->active()
+        ])
+        ->whereHas('stories', fn($q) => $q->active()
                     ->with(['views' => function ($vq) use ($user, $ip) {
                         $vq->when($user, fn($query) => $query->where('user_id', $user->id))
                            ->when(!$user && $ip, fn($query) => $query->where('ip_device', $ip))
                            ->when(!$user && !$ip, fn($query) => $query->whereRaw('1 = 0'));
-                    }]);
-            }
-        ])
-        ->whereHas('stories', fn($q) => $q->active())
+                    }]))
         ->get();
     }
     
@@ -62,22 +59,42 @@ class ProviderRepository extends BaseRepository implements ProviderRepositoryInt
             ->value('id');
     }
 
-    public function getFilteredPaginatedProviders(array $filters = [], int $perPage = 15)
+    public function getFilteredPaginatedProviders($filters = [], int $perPage = 15)
     {
         return $this->model->with(['translations', 'country.translations', 'branches', 'offers.translations'])
-            ->filterBySection($filters['section'] ?? null)
-            ->filterByRating($filters['rating'] ?? null)
-            ->filterByDiscount($filters['discount'] ?? null)
+            ->filter($filters)
             ->paginate($perPage);
     }
 
-    public function getProvidersByCategory($categoryId, array $filters = [], int $perPage = 15)
+    public function getProvidersByCategory($categoryId, $filters = [], int $perPage = 15)
     {
         return $this->model->with(['translations', 'country.translations', 'branches', 'offers.translations'])
             ->whereHas('categories', fn($q) => $q->where('category_id', $categoryId))
-            ->filterBySection($filters['section'] ?? null)
-            ->filterByRating($filters['rating'] ?? null)
-            ->filterByDiscount($filters['discount'] ?? null)
+            ->filter($filters)
             ->paginate($perPage);
+    }
+
+    public function getDetails($id)
+    {
+        return $this->model->with([
+            'translations',
+            'section',
+            'branches.translations',
+            'branches.governorate.translations',
+            'branches.city.translations',
+            'offers' => function($q) {
+                $q->where('status', 'published')
+                  ->where('start_date', '<=', now())
+                  ->where('end_date', '>=', now())
+                  ->latest()
+                  ->with(['translations']);
+            },
+            'reviews.user',
+            'reviews.offer.translations'
+        ])
+        ->withAvg('reviews', 'rating')
+        ->withCount('reviews')
+        ->withMax('offers', 'discount_percent')
+        ->findOrFail($id);
     }
 }

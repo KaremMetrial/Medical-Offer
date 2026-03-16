@@ -23,5 +23,19 @@ return [
         \App\Repositories\Contracts\StoryRepositoryInterface::class => \App\Repositories\Eloquent\StoryRepository::class,
         \App\Repositories\Contracts\NationalityRepositoryInterface::class => \App\Repositories\Eloquent\NationalityRepository::class,
         \App\Repositories\Contracts\GovernorateRepositoryInterface::class => \App\Repositories\Eloquent\GovernorateRepository::class,
+        \App\Repositories\Contracts\ReviewRepositoryInterface::class => \App\Repositories\Eloquent\ReviewRepository::class,
+        \App\Repositories\Contracts\MemberPlanRepositoryInterface::class => \App\Repositories\Eloquent\MemberPlanRepository::class,
+        \App\Repositories\Contracts\SubscriptionRepositoryInterface::class => \App\Repositories\Eloquent\SubscriptionRepository::class,
+    ],
+    /*
+    |--------------------------------------------------------------------------
+    | Repositories Singletons
+    |--------------------------------------------------------------------------
+    |
+    | Define your interface to implementation mappings here.
+    |
+    */
+    'singletons' => [
+        \App\Services\CountryContext::class => \App\Services\CountryContext::class,
     ],
 ];

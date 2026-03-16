@@ -17,14 +17,25 @@ use App\Http\Controllers\Api\{
     NationalityController,
     EnumController,
     GovernorateController,
+    ReviewController,
+    MemberPlanController,
+    PageController,
+    SubscriptionController,
 };
 Route::prefix('v1')->group(function(){
+    Route::get('/faqs', [PageController::class, 'faqs']);
+    Route::get('/terms', [PageController::class, 'terms']);
+
+    Route::prefix('member-plans')->controller(MemberPlanController::class)->name('member-plans.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{id}', 'show')->name('show');
+    });
     
-    Route::prefix('auth')->group(function () {
+    Route::prefix('auth')->controller(AuthController::class)->name('auth.')->group(function () {
         // Standard rate limit for OTP sending: 6 times per minute per IP
-        Route::post('/send-otp', [AuthController::class, 'sendOtp'])->middleware('throttle:6,1');
-        Route::post('/verify-otp', [AuthController::class, 'verifyOtp']);
-        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/send-otp', 'sendOtp')->middleware('throttle:6,1')->name('sendOtp');
+        Route::post('/verify-otp', 'verifyOtp')->name('verifyOtp');
+        Route::post('/register', 'register')->name('register');
     });
 
     Route::get('/home', HomeController::class);
@@ -61,6 +72,10 @@ Route::prefix('v1')->group(function(){
         Route::get('/by-category/{categoryId}', 'getProvidersByCategory')->name('byCategory');
     });
 
+    Route::prefix('reviews')->controller(ReviewController::class)->name('reviews.')->group(function () {
+        Route::get('/by-provider/{providerId}', 'getReviewsByProviderId')->name('byProvider');
+    });
+
     Route::get('/governorates', [GovernorateController::class, 'index']);    
     
     Route::get('/offers', [OfferController::class, 'index']);
@@ -69,6 +84,12 @@ Route::prefix('v1')->group(function(){
     Route::get('/cities', [CityController::class, 'index']);
 
     Route::middleware('auth:sanctum')->group(function () {
+        Route::prefix('subscription')->controller(SubscriptionController::class)->name('subscription.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/', 'subscribe')->name('subscribe');
+            Route::get('/invoices', 'invoices')->name('invoices');
+        });
+
         Route::get('/favorites', [FavoriteController::class, 'index']);
         Route::post('/favorites/toggle', [FavoriteController::class, 'toggle']);
     });

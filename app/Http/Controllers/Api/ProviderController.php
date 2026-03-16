@@ -9,8 +9,10 @@ use App\Repositories\Contracts\{
 };
 use App\Http\Resources\{
     ProviderResource,
+    ProviderDetailsResource,
     PaginationResource,
-    GovernorateResource
+    GovernorateResource,
+    OfferResource
 };
 use Illuminate\Http\{
     JsonResponse,
@@ -21,6 +23,7 @@ use App\Enums\{
     RatingType,
     DiscountType
 };
+use App\Filters\ProviderFilter;
 
 class ProviderController extends BaseController
 {
@@ -33,8 +36,14 @@ class ProviderController extends BaseController
 
     public function index(Request $request): JsonResponse
     {
-        $filters = $request->only(['section', 'rating', 'discount']);
-        $providers = $this->providerRepository->getFilteredPaginatedProviders($filters, 15);
+        $filters = $request->validate([
+            'section' => 'nullable|exists:sections,type',
+            'rating' => 'nullable|in:' . implode(',', RatingType::values()),
+            'discount' => 'nullable|in:' . implode(',', DiscountType::values()),
+            'governorate_id' => 'nullable|exists:governorates,id'
+        ]);
+        $providers = $this->providerRepository->getFilteredPaginatedProviders(new ProviderFilter($request), 15);
+        $governorates = $this->governorateRepository->all(['*'], ['translations']);
         
         return $this->successResponse([
             'title' => __('message.providers'),
@@ -45,6 +54,7 @@ class ProviderController extends BaseController
                 'section' => SectionType::options(),
                 'rating' => RatingType::options(),
                 'discount' => DiscountType::options(),
+                'governorate_id' => GovernorateResource::collection($governorates),
             ],
             'selected_filters' => [
                 'section' => [
@@ -69,10 +79,41 @@ class ProviderController extends BaseController
 
     public function show($id): JsonResponse
     {
-        $provider = $this->providerRepository->findOrFail($id, ['*'], ['translations', 'country', 'branches', 'reviews']);
-        return $this->successResponse(new ProviderResource($provider));
-    }
+        $provider = $this->providerRepository->getDetails($id);        
 
+        // Increment views (visits)
+        $provider->increment('views');
+
+        $titleKey = $this->getProviderLabel($provider->section?->type);
+
+        return $this->successResponse([
+            'provider' => new ProviderDetailsResource($provider),
+            'offers' => OfferResource::collection($provider->offers),
+            'labels' => [
+                'title' => __($titleKey),
+                'sub_title' => $provider->name,
+                'visits_count' => __('message.visits_count'),
+                'rating' => __('message.rating'),
+                'experience_years' => __('message.experience_years'),
+                'discounts_up_to' => __('message.discounts_up_to'),
+                'contact_details' => __('message.contact_details'),
+                'visitor_reviews' => __('message.visitor_reviews'),
+                'discounts' => __('message.discounts'),
+                'call_now' => __('message.call_now'),
+                'clinic_location' => __('message.clinic_location'),
+            ],
+        ]);
+    }
+    private function getProviderLabel($sectionType)
+    {
+        return match($sectionType) {
+            SectionType::DOCTORS => 'message.details_doctors',
+            SectionType::LABS => 'message.details_labs',
+            SectionType::PHARMACIES => 'message.details_pharmacies',
+            SectionType::CENTERS => 'message.details_centers',
+            default => 'message.provider_details',
+        };
+    }
     public function getProvidersByCategory($categoryId, Request $request): JsonResponse
     {
         $filters = $request->validate([
@@ -83,7 +124,7 @@ class ProviderController extends BaseController
         ]);
         $category = $this->categoryRepository->findOrFail($categoryId, ['*'], ['parent.translations']);
         $governorates = $this->governorateRepository->all(['*'], ['translations']);
-        $providers = $this->providerRepository->getProvidersByCategory($categoryId, $filters, 15);
+        $providers = $this->providerRepository->getProvidersByCategory($categoryId, new ProviderFilter($request), 15);
         return $this->successResponse([
             'title' => $category->parent?->name,
             'sub_title' => $category->name,

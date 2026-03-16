@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\MemberPlans\Schemas;
 
 use App\Models\Country;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
@@ -32,6 +33,11 @@ class MemberPlanForm
                                     'label' => __('filament.fields.label'),
                                     'overrides' => fn($component) => $component->columnSpanFull(),
                                 ],
+                                'feature' => [
+                                    'type' => 'markdown_editor',
+                                    'label' => __('filament.fields.features'),
+                                    'overrides' => fn($component) => $component->columnSpanFull(),
+                                ],
                             ]),
                         ]),
 
@@ -39,11 +45,10 @@ class MemberPlanForm
                         ->schema([
                             Select::make('country_id')
                                 ->label(__('filament.fields.country'))
-                                ->relationship('country', 'id')
-                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
                                 ->options(fn() => Country::all()->pluck('name', 'id'))
                                 ->searchable()
                                 ->nullable()
+                                ->required()
                                 ->live()
                                 ->columnSpanFull(),
                             TextInput::make('price')
@@ -61,10 +66,31 @@ class MemberPlanForm
                             TextInput::make('duration_days')
                                 ->label(__('filament.fields.duration_days'))
                                 ->numeric()
+                                ->minValue(1)
                                 ->required(),
-                            TagsInput::make('features_json')
-                                ->label(__('filament.fields.features'))
-                                ->placeholder(__('filament.fields.add_feature'))
+                            TextInput::make('features_json.number_of_buddies')
+                                ->label(__('filament.fields.number_of_buddies'))
+                                ->numeric()
+                                ->minValue(0)
+                                ->default(0)
+                                ->columnSpanFull(),
+                            TextInput::make('features_json.number_of_providers')
+                                ->label(__('filament.fields.number_of_providers'))
+                                ->numeric()
+                                ->minValue(0)
+                                ->default(0)
+                                ->columnSpanFull(),
+                            TextInput::make('features_json.number_of_visits')
+                                ->label(__('filament.fields.number_of_visits'))
+                                ->numeric()
+                                ->minValue(0)
+                                ->default(0)
+                                ->columnSpanFull(),
+                            TextInput::make('features_json.discount_percentage')
+                                ->label(__('filament.fields.discount_percentage'))
+                                ->numeric()
+                                ->minValue(0)
+                                ->default(0)
                                 ->columnSpanFull(),
                         ])->columns(2),
                 ])->columnSpan(3),

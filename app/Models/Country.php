@@ -72,7 +72,7 @@ class Country extends Model
 
     public function getNameAttribute()
     {
-        return $this->translation()?->name;
+        return $this->translation()?->name ?? "Country #{$this->id}";
     }
     public function stories()
     {
@@ -96,5 +96,12 @@ class Country extends Model
     public function getSrcAttribute(): ?string
     {
         return $this->flag ? asset('storage/' . $this->flag) : null;
+    }
+    public function getCurrencyFactorAttribute($value): int
+    {
+        if($value == 0){
+            return 1;
+        }
+        return (int) $value;
     }
 }

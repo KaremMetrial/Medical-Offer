@@ -11,4 +11,6 @@ interface OfferRepositoryInterface extends BaseRepositoryInterface
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getCareOffers(int $limit = 10);
+
+    public function getOffersByProviderId($id, $columns = ['*'], $relations = []);
 }

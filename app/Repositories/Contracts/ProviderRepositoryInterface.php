@@ -38,19 +38,21 @@ interface ProviderRepositoryInterface extends BaseRepositoryInterface
     /**
      * Get filtered and paginated providers.
      *
-     * @param array $filters
+     * @param mixed $filters
      * @param int $perPage
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getFilteredPaginatedProviders(array $filters = [], int $perPage = 15);
+    public function getFilteredPaginatedProviders($filters = [], int $perPage = 15);
 
     /**
      * Get providers by category.
      *
      * @param int $categoryId
-     * @param array $filters
+     * @param mixed $filters
      * @param int $perPage
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getProvidersByCategory(int $categoryId, array $filters = [], int $perPage = 15);
+    public function getProvidersByCategory(int $categoryId, $filters = [], int $perPage = 15);
+    
+    public function getDetails($id);
 }

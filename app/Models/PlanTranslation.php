@@ -13,11 +13,13 @@ class PlanTranslation extends Model
         'plan_id',
         'local',
         'name',
-        'label'
+        'label',
+        'feature'
     ];
 
     protected $casts = [
-        'plan_id' => 'integer'
+        'plan_id' => 'integer',
+        'feature' => 'array'
     ];
 
     public function plan()

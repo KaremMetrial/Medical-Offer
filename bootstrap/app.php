@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
 use App\Http\Middleware\SetLocaleMiddleware;
+use App\Http\Middleware\SetCountryMiddleware;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,7 +24,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->api(prepend: [SetLocaleMiddleware::class]);
+        $middleware->api(prepend: [
+            SetLocaleMiddleware::class,
+            SetCountryMiddleware::class
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {

@@ -145,10 +145,13 @@ return [
         'media_url' => 'ملف الوسائط',
         'expiry_time' => 'وقت الانتهاء',
         'countries' => 'الدول المستهدفة',
-        'views' => 'المشاهدات',
         'created_at' => 'تاريخ الإنشاء',
         'media_preview' => 'معاينة الوسائط',
         'type' => 'النوع',
+        'number_of_buddies' => 'عدد المرافقين',
+        'number_of_providers' => 'عدد المزودين',
+        'number_of_visits' => 'عدد الزيارات',
+        'discount_percentage' => 'نسبة الخصم',
     ],
     'nav' => [
         'group' => [
