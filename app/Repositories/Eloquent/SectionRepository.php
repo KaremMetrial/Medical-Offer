@@ -24,21 +24,17 @@ class SectionRepository extends BaseRepository implements SectionRepositoryInter
     {
         return $this->model->with([
             'translations',
-            // 'categories' => fn($q) => $q->where('is_active', true)
-            //     ->where('is_show', true)
-            //     ->with('translations')
-            //     ->orderBy('sort_order')
-            //     ->take(12),
             'providers' => fn($q) => $q->where('providers.status', 'active')
-                ->with(['translations', 'country'])
+                ->with(['translations', 'country.translations'])
                 ->with(['branches' => fn($bq) => $bq->where('is_main', true)])
                 ->withCount('reviews')
                 ->withAvg('reviews', 'rating')
+                ->withMax('offers', 'discount_percent')
                 ->orderByDesc('is_varified')
                 ->orderByDesc('reviews_avg_rating'),
             'offers' => fn($q) => $q->where('offers.status', 'published')
-                ->with(['translations', 'provider.translations', 'provider.branches' => fn($bq) => $bq->where('is_main', true)])
                 ->where('offers.show_in_home', true)
+                ->with(['translations'])
                 ->orderBy('offers.sort_order'),
         ])
         ->where('is_active', true)

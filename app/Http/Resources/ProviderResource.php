@@ -14,12 +14,14 @@ class ProviderResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        // Get max discount using already loaded offers relationship if available
+        // Get max discount using already loaded offers relationship or withMax attribute
         $maxDiscount = 0;
-        if ($this->relationLoaded('offers')) {
+        if (isset($this->offers_max_discount_percent)) {
+            $maxDiscount = $this->offers_max_discount_percent;
+        } elseif ($this->relationLoaded('offers')) {
             $maxDiscount = $this->offers->max('discount_percent') ?? 0;
         } else {
-            // Fall back to query if offers not loaded
+            // Fall back to query if nothing is available (try to avoid this in controllers)
             $maxDiscount = $this->offers()->max('discount_percent') ?? 0;
         }
 
@@ -40,8 +42,8 @@ class ProviderResource extends JsonResource
             'title' => $this->title,
             'description' => $this->description,
             'logo' => $this->logo_url,
-            'rating' => (float) ($this->reviews_avg_rating ?? $this->reviews->avg('rating') ?? 0),
-            'reviews_count' => (int) ($this->reviews_count ?? $this->reviews->count()),
+            'rating' => (float) ($this->reviews_avg_rating ?? 0),
+            'reviews_count' => (int) ($this->reviews_count ?? 0),
             'max_discount' => $maxDiscount,
             'address' => $address,
         ];

@@ -20,7 +20,7 @@ class SectionController extends BaseController
         $sections = $this->sectionRepository->all(['*'], ['translations']);
         return $this->successResponse([
             'label' => __('message.sections'),
-            'items' => SectionResource::collection($sections)
+            'sections' => SectionResource::collection($sections)
         ]);
     }
 }

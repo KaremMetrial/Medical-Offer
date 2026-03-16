@@ -161,6 +161,43 @@ class Provider extends Model
         });
     }
 
+    public function scopeFilterBySection($query, $sectionType)
+    {
+        if (!$sectionType) return $query;
+        return $query->whereHas('section', fn($q) => $q->where('type', $sectionType));
+    }
+
+    public function scopeFilterByRating($query, $ratingType)
+    {
+        if (!$ratingType) return $query;
+        
+        $query->withAvg('reviews', 'rating');
+
+        return match ($ratingType) {
+            'five' => $query->having('reviews_avg_rating', '=', 5),
+            'four_and_above' => $query->having('reviews_avg_rating', '>=', 4),
+            'three_and_above' => $query->having('reviews_avg_rating', '>=', 3),
+            'two_and_above' => $query->having('reviews_avg_rating', '>=', 2),
+            default => $query
+        };
+    }
+
+    public function scopeFilterByDiscount($query, $discountType)
+    {
+        if (!$discountType) return $query;
+
+        return $query->whereHas('offers', function ($q) use ($discountType) {
+            match ($discountType) {
+                'ten_and_twenty' => $q->whereBetween('discount_percent', [10, 20]),
+                'twenty_and_forty' => $q->whereBetween('discount_percent', [20, 40]),
+                'forty_and_sixty' => $q->whereBetween('discount_percent', [40, 60]),
+                'sixty_and_eighty' => $q->whereBetween('discount_percent', [60, 80]),
+                'eighty_and_one_hundred' => $q->whereBetween('discount_percent', [80, 100]),
+                default => null
+            };
+        });
+    }
+
     public function getImagePathAttribute(): ?string
     {
         return $this->logo;

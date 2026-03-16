@@ -21,7 +21,7 @@ class CityController extends BaseController
         $cities = $this->cityRepository->all(['*'], ['translations']);
         return $this->successResponse([
             'label' => __('message.cities'),
-            'items' => CityResource::collection($cities)
+            'cities' => CityResource::collection($cities)
         ]);
     }
 }

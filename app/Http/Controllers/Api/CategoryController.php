@@ -20,7 +20,7 @@ class CategoryController extends BaseController
         $categories = $this->categoryRepository->getActiveCategories();
         return $this->successResponse([
             'label' => __('message.categories'),
-            'items' => CategoryResource::collection($categories)
+            'categories' => CategoryResource::collection($categories)
         ]);
     }
 
@@ -29,7 +29,7 @@ class CategoryController extends BaseController
         $categories = $this->categoryRepository->getParentActiveCategoriesBySectionId($sectionId);
         return $this->successResponse([
             'label' => __('message.categories'),
-            'items' => CategoryResource::collection($categories)
+            'categories' => CategoryResource::collection($categories)
         ]);
     }
 
@@ -38,7 +38,7 @@ class CategoryController extends BaseController
         $category = $this->categoryRepository->findOrFail($id, ['*'], ['translations', 'children.translations']);
         return $this->successResponse([
             'label' => __('message.category'),
-            'item' => new CategoryResource($category)
+            'category' => new CategoryResource($category)
         ]);
     }
 }

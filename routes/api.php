@@ -13,6 +13,10 @@ use App\Http\Controllers\Api\{
     CityController,
     FavoriteController,
     SectionController,
+    StoryController,
+    NationalityController,
+    EnumController,
+    GovernorateController,
 };
 Route::prefix('v1')->group(function(){
     
@@ -32,9 +36,33 @@ Route::prefix('v1')->group(function(){
     });
 
     Route::get('/sections', [SectionController::class, 'index']);
+
+    Route::prefix('stories')->controller(StoryController::class)->name('stories.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/by-provider/{providerId}', 'getStoriesByProviderId')->name('byProvider');
+        Route::get('/{id}', 'show')->name('show');
+        Route::post('/{id}/view', 'recordView')->name('view');
+    });
+
+    Route::prefix('nationalities')->controller(NationalityController::class)->name('nationalities.')->group(function () {
+        Route::get('/', 'index')->name('index');
+    });
+
+    Route::controller(EnumController::class)->group(function () {
+        Route::get('/genders', 'genders')->name('genders');
+        Route::get('/ratings', 'ratings')->name('ratings');
+        Route::get('/discounts', 'discounts')->name('discounts');
+        Route::get('/sections', 'sections')->name('sections');
+    });
+
+    Route::prefix('providers')->controller(ProviderController::class)->name('providers.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{id}', 'show')->name('show');
+        Route::get('/by-category/{categoryId}', 'getProvidersByCategory')->name('byCategory');
+    });
+
+    Route::get('/governorates', [GovernorateController::class, 'index']);    
     
-    Route::get('/providers', [ProviderController::class, 'index']);
-    Route::get('/providers/{id}', [ProviderController::class, 'show']);
     Route::get('/offers', [OfferController::class, 'index']);
     Route::get('/offers/{id}', [OfferController::class, 'show']);
     Route::get('/countries', [CountryController::class, 'index']);

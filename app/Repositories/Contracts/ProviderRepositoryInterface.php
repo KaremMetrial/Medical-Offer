@@ -26,4 +26,31 @@ interface ProviderRepositoryInterface extends BaseRepositoryInterface
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function getMedicalCenters(int $limit = 10);
+
+    /**
+     * Get the next provider ID that has active stories.
+     *
+     * @param int $currentProviderId
+     * @return int|null
+     */
+    public function getNextProviderIdWithStories(int $currentProviderId): ?int;
+
+    /**
+     * Get filtered and paginated providers.
+     *
+     * @param array $filters
+     * @param int $perPage
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function getFilteredPaginatedProviders(array $filters = [], int $perPage = 15);
+
+    /**
+     * Get providers by category.
+     *
+     * @param int $categoryId
+     * @param array $filters
+     * @param int $perPage
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public function getProvidersByCategory(int $categoryId, array $filters = [], int $perPage = 15);
 }

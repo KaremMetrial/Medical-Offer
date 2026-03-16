@@ -14,7 +14,9 @@ class CountryRepository extends BaseRepository implements CountryRepositoryInter
 
     public function getDefaultCountry()
     {
-        $defaultCountryId = config('settings.default_country_id', 1);
-        return $this->model->find($defaultCountryId) ?? $this->model->first();
+        return \Illuminate\Support\Facades\Cache::remember('default_country', now()->addDay(), function () {
+            $defaultCountryId = config('settings.default_country_id', 1);
+            return $this->model->find($defaultCountryId) ?? $this->model->first();
+        });
     }
 }

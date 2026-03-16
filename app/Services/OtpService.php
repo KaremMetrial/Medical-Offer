@@ -19,7 +19,7 @@ class OtpService
     public function send(User $user): string
     {
         // Generate 6-digit numeric OTP
-        $otp = (string) random_int(1000, 9999);
+        $otp = env('APP_ENV') === 'local' ? '1111' : (string) random_int(1000, 9999);
 
         // Save hashed OTP and expiry to user record
         // OTP is valid for 5 minutes

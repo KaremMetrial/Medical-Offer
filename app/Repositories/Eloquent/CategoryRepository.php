@@ -22,7 +22,7 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
     }
     public function getParentActiveCategoriesBySectionId($sectionId)
     {
-        return $this->model->with('translations')
+        return $this->model->with(['translations','children.translations'])
             ->where('is_active', true)
             ->where('is_show', true)
             ->where('section_id', $sectionId)

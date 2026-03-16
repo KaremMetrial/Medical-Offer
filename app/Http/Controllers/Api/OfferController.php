@@ -21,7 +21,7 @@ class OfferController extends BaseController
         $offers = $this->offerRepository->paginate(15, ['*'], ['translations', 'images', 'provider']);
         return $this->successResponse([
             'label' => __('message.offers'),
-            'items' => OfferResource::collection($offers)->response()->getData(true)
+            'offers' => OfferResource::collection($offers)->response()->getData(true)
         ]);
     }
 

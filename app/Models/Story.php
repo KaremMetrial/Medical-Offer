@@ -55,6 +55,10 @@ class Story extends Model
     }
     public function isViewed(): bool
     {
+        if ($this->relationLoaded('views')) {
+            return $this->views->isNotEmpty();
+        }
+
         $user = auth('sanctum')->user();
         $ip = request()->header('Ip-Device');
 

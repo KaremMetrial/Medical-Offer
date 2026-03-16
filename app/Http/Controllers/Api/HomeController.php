@@ -39,14 +39,17 @@ class HomeController extends BaseController
     public function __invoke(Request $request)
     {
         $user = auth('sanctum')->user();
+        if ($user) {
+            $user->load(['country']);
+            $user->loadCount(['notifications as unread_notifications_count' => fn($q) => $q->whereNull('read_at')]);
+        }
         $locale = app()->getLocale();
 
         // Cache non-user-specific data for 30 minutes
-        $sharedData = Cache::remember("home_shared_data_{$locale}_v4", now()->addMinutes(30), function () {
+        $sharedData = Cache::remember("home_shared_data_{$locale}_v5", now()->addMinutes(30), function () {
             $sectionsAndFeatured = $this->getSectionsAndFeaturedData();
             
             return [
-                'stories' => $this->getStoriesData(),
                 'banners' => $this->getBannersData(),
                 'sections' => $sectionsAndFeatured['sections'],
                 'membership_banner' => $this->getMembershipBannerData(),
@@ -57,6 +60,7 @@ class HomeController extends BaseController
         return $this->successResponse(
             new HomeResource(array_merge([
                 'appbar' => $this->getAppBarData($user),
+                'stories' => $this->getStoriesData($user, $request->header('Ip-Device')), // Stories state (is_viewed) is per-user/device
             ], $sharedData)),
             __('home.retrieved_successfully')
         );
@@ -86,9 +90,9 @@ class HomeController extends BaseController
     /**
      * Get stories.
      */
-    private function getStoriesData()
+    private function getStoriesData($user = null, $ip = null)
     {
-        $providers = $this->providerRepository->getWithActiveStories();
+        $providers = $this->providerRepository->getWithActiveStories($user, $ip);
         return ProviderStoryResource::collection($providers)->resolve();
     }
 

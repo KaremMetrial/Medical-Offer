@@ -25,6 +25,10 @@ return [
         'label' => 'محافظة',
         'plural_label' => 'المحافظات',
     ],
+    'nationality' => [
+        'label' => 'جنسية',
+        'plural_label' => 'الجنسيات',
+    ],
     'city' => [
         'label' => 'مدينة',
         'plural_label' => 'المدن',

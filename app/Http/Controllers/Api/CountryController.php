@@ -20,7 +20,7 @@ class CountryController extends BaseController
         $countries = $this->countryRepository->all(['*'], ['translations']);
         return $this->successResponse([
             'label' => __('message.countries'),
-            'items' => CountryResource::collection($countries)
+            'countries' => CountryResource::collection($countries)
         ]);
     }
 }

@@ -22,4 +22,13 @@ return [
     'offers'               => 'Offers',
     'providers'            => 'Providers',
     'sections'             => 'Sections',
+    'nationalities'        => 'Nationalities',
+    'male'                 => 'Male',
+    'female'               => 'Female',
+    'ten_and_twenty'        => '10% - 20%',
+    'twenty_and_forty'      => '20% - 40%',
+    'forty_and_sixty'       => '40% - 60%',
+    'sixty_and_eighty'      => '60% - 80%',
+    'eighty_and_one_hundred'=> '80% - 100%',
+    'governorates'          => 'Governorates',
 ];

@@ -20,5 +20,8 @@ return [
         \App\Repositories\Contracts\CityRepositoryInterface::class => \App\Repositories\Eloquent\CityRepository::class,
         \App\Repositories\Contracts\FavoriteRepositoryInterface::class => \App\Repositories\Eloquent\FavoriteRepository::class,
         \App\Repositories\Contracts\SectionRepositoryInterface::class => \App\Repositories\Eloquent\SectionRepository::class,
+        \App\Repositories\Contracts\StoryRepositoryInterface::class => \App\Repositories\Eloquent\StoryRepository::class,
+        \App\Repositories\Contracts\NationalityRepositoryInterface::class => \App\Repositories\Eloquent\NationalityRepository::class,
+        \App\Repositories\Contracts\GovernorateRepositoryInterface::class => \App\Repositories\Eloquent\GovernorateRepository::class,
     ],
 ];

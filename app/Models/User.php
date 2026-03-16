@@ -28,6 +28,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         'governorate_id',
         'city_id',
         'parent_user_id',
+        'nationality_id',
+        'gender',
         'is_active'
     ];
 
@@ -45,13 +47,17 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         'country_id' => 'integer',
         'governorate_id' => 'integer',
         'city_id' => 'integer',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
+        'gender' => 'string'
     ];
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->isAdmin();
     }
-
+    public function nationality()
+    {
+        return $this->belongsTo(Nationality::class);
+    }
     public function country()
     {
         return $this->belongsTo(Country::class);
@@ -207,6 +213,6 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     }
     public function unreadNotificationsCount(): int
     {
-        return $this->notifications()->where('read_at', null)->count() ?? 0;
+        return $this->unread_notifications_count ?? $this->notifications()->where('read_at', null)->count() ?? 0;
     }
 }

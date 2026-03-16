@@ -29,6 +29,10 @@ return [
         'label' => 'City',
         'plural_label' => 'Cities',
     ],
+    'nationality' => [
+        'label' => 'Nationality',
+        'plural_label' => 'Nationalities',
+    ],
     'member_plan' => [
         'label' => 'Member Plan',
         'plural_label' => 'Member Plans',

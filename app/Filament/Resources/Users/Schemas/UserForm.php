@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Country;
 use App\Models\Governorate;
 use App\Models\City;
+use App\Models\Nationality;
 
 use App\Traits\UploadTrait;
 
@@ -45,22 +46,36 @@ class UserForm
                                 ->label(__('filament.fields.country'))
                                 ->relationship('country', 'id')
                                 ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
-                                ->options(fn() => Country::all()->pluck('name', 'id'))
+                                ->options(fn() => Country::with('translations')->get()->pluck('name', 'id'))
                                 ->searchable()
                                 ->live(),
                             Select::make('governorate_id')
                                 ->label(__('filament.fields.governorate'))
                                 ->relationship('governorate', 'id')
                                 ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
-                                ->options(fn(callable $get) => Governorate::where('country_id', $get('country_id'))->pluck('name', 'id'))
+                                ->options(fn(callable $get) => Governorate::where('country_id', $get('country_id'))->with('translations')->get()->pluck('name', 'id'))
                                 ->searchable()
                                 ->live(),
                             Select::make('city_id')
                                 ->label(__('filament.fields.city'))
                                 ->relationship('city', 'id')
                                 ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
-                                ->options(fn(callable $get) => City::where('governorate_id', $get('governorate_id'))->pluck('name', 'id'))
+                                ->options(fn(callable $get) => City::where('governorate_id', $get('governorate_id'))->with('translations')->get()->pluck('name', 'id'))
                                 ->searchable(),
+                            Select::make('gender')
+                                ->label(__('filament.fields.gender'))
+                                ->options([
+                                    'male' => __('filament.options.gender.male'),
+                                    'female' => __('filament.options.gender.female'),
+                                ])
+                                ->required(),
+                            Select::make('nationality_id')
+                                ->label(__('filament.fields.nationality'))
+                                ->relationship('nationality', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->options(fn() => Nationality::with('translations')->get()->pluck('name', 'id'))
+                                ->searchable()
+                                ->live(),
                         ])->columns(3),
 
                     Section::make(__('filament.fields.password'))
