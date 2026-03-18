@@ -16,11 +16,9 @@ class OnlinePaymentStrategy implements PaymentStrategyInterface
         $planCountry = $plan->country ?: ($plan->country_id ? Country::find($plan->country_id) : $countryRepo->getDefaultCountry());
         $userCountry = $user->country ?: ($user->country_id ? Country::find($user->country_id) : $countryRepo->getDefaultCountry());
         
-        $planCurrency = $planCountry->currency_unit ?: 'EGP';
         $userCurrency = $userCountry->currency_unit ?: 'SAR';
-
-        // 1. Calculate effective price in user's local currency for the gateway
-        $effectivePriceInUserCurrency = $currencyService->convert($plan->price, $planCurrency, $userCurrency);
+        $systemBase = config('settings.currency.system_base', 'USD');
+        $effectivePriceInUserCurrency = $currencyService->convert($plan->price, $systemBase, $userCurrency);
 
         // Integration with external gateway would happen here
         return [

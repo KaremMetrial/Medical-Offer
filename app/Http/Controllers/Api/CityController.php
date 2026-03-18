@@ -16,9 +16,9 @@ class CityController extends BaseController
         $this->cityRepository = $cityRepository;
     }
 
-    public function index(Request $request): JsonResponse
+    public function index(\App\Filters\CityFilter $filter): JsonResponse
     {
-        $cities = $this->cityRepository->all(['*'], ['translations']);
+        $cities = $this->cityRepository->getFilteredCities($filter);
         return $this->successResponse([
             'label' => __('message.cities'),
             'cities' => CityResource::collection($cities)

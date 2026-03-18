@@ -19,7 +19,7 @@ class MemberPlan extends Model
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
+        'price' => 'decimal:6',
         'duration_days' => 'integer',
         'features_json' => 'array',
         'is_active' => 'boolean',

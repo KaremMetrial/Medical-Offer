@@ -129,7 +129,7 @@ class HomeController extends BaseController
 
                     $featured[] = [
                         'label' => $labelPrefix,
-                        'section_type' => $section->type->value,
+                        'section_type' => $section->type?->value,
                         'items' => $items
                     ];
                 }
@@ -146,7 +146,7 @@ class HomeController extends BaseController
                 if (!empty($items)) {
                     $featured[] = [
                         'label' => __('home.sections.care_offers'),
-                        'section_type' => $section->type->value,
+                        'section_type' => $section->type?->value,
                         'items' => $items
                     ];
                 }

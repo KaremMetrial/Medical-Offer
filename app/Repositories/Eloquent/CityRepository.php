@@ -11,4 +11,11 @@ class CityRepository extends BaseRepository implements CityRepositoryInterface
     {
         parent::__construct($model);
     }
+    public function getFilteredCities($filters = [])
+    {
+        return $this->model->with(['translations'])
+            ->filter($filters)
+            ->where('is_active', true)
+            ->get();
+    }
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Governorate extends Model
 {
-    use HasFactory, \App\Traits\BelongsToCountry;
+    use HasFactory, \App\Traits\BelongsToCountry, \App\Traits\Filterable;
 
     protected $fillable = [
         'country_id',

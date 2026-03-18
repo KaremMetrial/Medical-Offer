@@ -10,10 +10,14 @@ use Laravel\Sanctum\HasApiTokens;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Support\Facades\Storage;
+use App\Enums\RelationshipType;
 
 class User extends Authenticatable implements MustVerifyEmail, FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable;
+    
+    protected $current_subscription_memo = null;
+    protected $is_subscription_memoized = false;
 
     protected $fillable = [
         'name',
@@ -31,7 +35,9 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         'nationality_id',
         'gender',
         'balance',
-        'is_active'
+        'relationship',
+        'is_active',
+        'companion_status',
     ];
 
     protected $hidden = [
@@ -50,7 +56,9 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         'city_id' => 'integer',
         'balance' => 'decimal:2',
         'is_active' => 'boolean',
-        'gender' => 'string'
+        'relationship' => RelationshipType::class,
+        'gender' => 'string',
+        'companion_status' => 'string'
     ];
     public function canAccessPanel(Panel $panel): bool
     {
@@ -74,7 +82,10 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     {
         return $this->belongsTo(City::class);
     }
-
+    public function cardRequests()
+    {
+        return $this->hasMany(CardRequest::class);
+    }
     public function parentUser()
     {
         return $this->belongsTo(User::class, 'parent_user_id');
@@ -108,6 +119,11 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function payments()
     {
         return $this->morphMany(Payment::class, 'payable');
+    }
+
+    public function attachments()
+    {
+        return $this->morphMany(Attachment::class, 'attachable');
     }
 
     public function providers()
@@ -169,12 +185,21 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     // Get current subscription
     public function currentSubscription()
     {
-        return $this->subscriptions()
+        if ($this->is_subscription_memoized) {
+            return $this->current_subscription_memo;
+        }
+
+        $this->current_subscription_memo = $this->subscriptions()
+            ->with('plan.translations')
             ->where('status', 'active')
             ->where('payment_status', 'paid')
             ->where('start_at', '<=', now())
             ->where('end_at', '>=', now())
             ->first();
+        
+        $this->is_subscription_memoized = true;
+
+        return $this->current_subscription_memo;
     }
 
     // Check if user has active subscription

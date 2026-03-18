@@ -36,5 +36,13 @@ enum SectionType: string
     {
         return array_map(fn($case) => ['value' => $case->value, 'label' => $case->getLabel()], self::cases());
     }
-
+    public static function optionsWithSelected($selected): array
+    {
+        $options['items'] = self::options();
+        $options['selected'] = $selected;
+        $options['selected_label'] = $selected ? self::getLabelByValue($selected) : null;
+        $options['label'] = __('message.section');
+        $options['key'] = 'section';
+        return $options;
+    }
 }

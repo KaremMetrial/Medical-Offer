@@ -57,6 +57,8 @@ class ProviderDetailsResource extends JsonResource
                     'lat' => $branch->lat,
                     'lng' => $branch->lng,
                     'is_main' => (bool) $branch->is_main,
+                    'governorate' => $branch->governorate?->name,
+                    'city' => $branch->city?->name,
                 ]);
             }),
         ];

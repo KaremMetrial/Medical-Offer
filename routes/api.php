@@ -21,6 +21,7 @@ use App\Http\Controllers\Api\{
     MemberPlanController,
     PageController,
     SubscriptionController,
+    CardRequestController,
 };
 Route::prefix('v1')->group(function(){
     Route::get('/faqs', [PageController::class, 'faqs']);
@@ -64,6 +65,7 @@ Route::prefix('v1')->group(function(){
         Route::get('/ratings', 'ratings')->name('ratings');
         Route::get('/discounts', 'discounts')->name('discounts');
         Route::get('/sections', 'sections')->name('sections');
+        Route::get('/relationship-types', 'relationshipTypes')->name('relationshipTypes');
     });
 
     Route::prefix('providers')->controller(ProviderController::class)->name('providers.')->group(function () {
@@ -77,20 +79,35 @@ Route::prefix('v1')->group(function(){
     });
 
     Route::get('/governorates', [GovernorateController::class, 'index']);    
+    Route::get('/countries', [CountryController::class, 'index']);
+    Route::get('/cities', [CityController::class, 'index']);
     
     Route::get('/offers', [OfferController::class, 'index']);
     Route::get('/offers/{id}', [OfferController::class, 'show']);
-    Route::get('/countries', [CountryController::class, 'index']);
-    Route::get('/cities', [CityController::class, 'index']);
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('subscription')->controller(SubscriptionController::class)->name('subscription.')->group(function () {
             Route::get('/', 'index')->name('index');
-            Route::post('/', 'subscribe')->name('subscribe');
+            Route::get('/upgrate-plans', 'upgratePlans')->name('upgrate-plans');
+            Route::post('/add-companion', 'addCompanion')->name('add-companion');
+            Route::post('/subscribe', 'subscribe')->name('subscribe');
             Route::get('/invoices', 'invoices')->name('invoices');
         });
 
-        Route::get('/favorites', [FavoriteController::class, 'index']);
-        Route::post('/favorites/toggle', [FavoriteController::class, 'toggle']);
+        Route::prefix('favorites')->controller(FavoriteController::class)->name('favorites.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::post('/toggle', 'toggle')->name('toggle');
+        });
+
+        Route::prefix('profile')->controller(AuthController::class)->name('profile.')->group(function () {
+            Route::get('/', 'profile')->name('index');
+            Route::post('/', 'updateProfile')->name('update');
+        });
+
+        Route::prefix('card-request')->controller(CardRequestController::class)->group(function () {
+            Route::get('/init', 'init');
+            Route::post('/', 'store');
+            Route::get('/status', 'status');
+        });
     });
 });

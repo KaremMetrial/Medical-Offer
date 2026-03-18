@@ -6,7 +6,8 @@ use App\Enums\{
     GenderType,
     RatingType,
     DiscountType,
-    SectionType
+    SectionType,
+    RelationshipType
 };
 
 class EnumController extends BaseController
@@ -37,6 +38,13 @@ class EnumController extends BaseController
         return $this->successResponse([
             'label' => __('message.sections'),
             'items' => SectionType::options()
+        ]);
+    }
+    public function relationshipTypes()
+    {
+        return $this->successResponse([
+            'label' => __('message.relationship_types'),
+            'items' => RelationshipType::options()
         ]);
     }
 }

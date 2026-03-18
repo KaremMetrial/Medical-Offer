@@ -97,7 +97,7 @@ class Country extends Model
     {
         return $this->flag ? asset('storage/' . $this->flag) : null;
     }
-    public function getCurrencyFactorAttribute($value): int
+    public function getCurrencyFactorAttribute($value)
     {
         if($value == 0){
             return 1;

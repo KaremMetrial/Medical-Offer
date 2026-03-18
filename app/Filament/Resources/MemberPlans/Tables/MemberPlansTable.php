@@ -9,7 +9,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-
+use App\Services\CurrencyService;
 class MemberPlansTable
 {
     public static function configure(Table $table): Table
@@ -39,7 +39,11 @@ class MemberPlansTable
                     ->formatStateUsing(function ($state, $record) {
                         $symbol = $record->country?->currency_symbol ?? '$';
                         $unit   = $record->country?->currency_unit   ?? 'USD';
-                        return $symbol . number_format((float) $state, 2) . ' ' . $unit;
+                        $factor = (float)($record->country?->currency_factor ?: 1);
+                        $decimals = $factor == 1000 ? 3 : 2;
+                        $finalPrice = app(CurrencyService::class)->convert((float) $state, 'USD', $unit);
+                        $finalPrice = round($finalPrice, $decimals);
+                        return $finalPrice . ' ' . $symbol;
                     })
                     ->sortable(),
 

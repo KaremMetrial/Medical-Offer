@@ -61,9 +61,19 @@ return [
         'label' => 'Payment',
         'plural_label' => 'Payments',
     ],
+    'attachments' => [
+        'label' => 'Attachment',
+        'plural_label' => 'Attachments',
+    ],
+    'card_request' => [
+        'label' => 'Card Request',
+        'plural_label' => 'Card Requests',
+    ],
     'user' => [
         'label' => 'User',
         'plural_label' => 'Users',
+        'companion_label' => 'Companion',
+        'companion_plural_label' => 'Companions',
     ],
     'sections' => [
         'translations' => 'Translations',
@@ -153,6 +163,21 @@ return [
         'number_of_providers' => 'Number of Providers',
         'number_of_visits' => 'Number of Visits',
         'discount_percentage' => 'Discount Percentage',
+        'relationship' => 'Relationship',
+        'companion_status' => 'Companion Status',
+        'file' => 'File',
+        'file_type' => 'File Type',
+        'nationality' => 'Nationality',
+        'gender' => 'Gender',
+        'receiver_name' => 'Receiver Name',
+        'receiver_phone' => 'Receiver Phone',
+        'issuance_fee' => 'Issuance Fee',
+        'delivery_fee' => 'Delivery Fee',
+        'total_amount' => 'Total Amount',
+    ],
+    'groups' => [
+        'details' => 'Details',
+        'financials' => 'Financials',
     ],
     'nav' => [
         'group' => [
@@ -174,6 +199,7 @@ return [
             'provider' => 'Provider',
             'admin' => 'Admin',
             'super_admin' => 'Super Admin',
+            'companion' => 'Companion',
         ],
         'status' => [
             'pending' => 'Pending',
@@ -198,5 +224,32 @@ return [
             'labs' => 'Labs & Radiology',
             'pharmacies' => 'Pharmacies',
         ],
+        'companion_status' => [
+            'pending' => 'Pending',
+            'approved' => 'Approved',
+            'rejected' => 'Rejected',
+        ],
+        'attachment_type' => [
+            'id_card' => 'ID Card',
+            'passport' => 'Passport',
+            'photo' => 'Photo',
+            'other' => 'Other',
+        ],
+        'gender' => [
+            'male' => 'Male',
+            'female' => 'Female',
+        ],
+    ],
+    'widgets' => [
+        'total_users' => 'Total Users',
+        'total_revenue' => 'Total Revenue',
+        'active_subscriptions' => 'Active Subscriptions',
+        'active_subscriptions_desc' => 'Currently active plans',
+        'monthly_revenue' => 'Monthly Revenue (EGP)',
+        'plan_distribution' => 'Active Subscription Distribution',
+        'latest_payments' => 'Latest Payments',
+        'users_by_country' => 'Users by Country Distribution',
+        'total_users_desc' => 'Total registered users',
+        'total_revenue_desc' => 'Total revenue in EGP',
     ],
 ];

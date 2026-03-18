@@ -18,6 +18,7 @@ class SubscriptionResource extends JsonResource
             'payment_status' => $this->payment_status,
             'remaining_days' => $this->remainingDays(),
             'qr_code' => $this->generateQrCode(),
+            'card_info' => $this->plan ? (new MemberPlanResource($this->plan))->toArray($request)['card_info'] : null,
             'plan_details' => new MemberPlanResource($this->whenLoaded('plan')),
         ];
     }

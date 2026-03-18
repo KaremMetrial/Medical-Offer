@@ -12,11 +12,19 @@ class CountryRepository extends BaseRepository implements CountryRepositoryInter
         parent::__construct($model);
     }
 
+    private $defaultCountry = null;
+
     public function getDefaultCountry()
     {
-        return \Illuminate\Support\Facades\Cache::remember('default_country', now()->addDay(), function () {
+        if ($this->defaultCountry !== null) {
+            return $this->defaultCountry;
+        }
+
+        $this->defaultCountry = \Illuminate\Support\Facades\Cache::remember('default_country', now()->addDay(), function () {
             $defaultCountryId = config('settings.default_country_id', 1);
             return $this->model->find($defaultCountryId) ?? $this->model->first();
         });
+
+        return $this->defaultCountry;
     }
 }

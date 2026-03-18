@@ -26,6 +26,7 @@ class SubscriptionRepository extends BaseRepository implements SubscriptionRepos
     public function getUserInvoices($userId)
     {
         return Payment::where('payable_type', Subscription::class)
+            ->with('payable.plan.translations')
             ->whereHasMorph('payable', [Subscription::class], function($q) use ($userId) {
                 $q->where('user_id', $userId);
             })

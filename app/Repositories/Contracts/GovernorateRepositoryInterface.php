@@ -10,4 +10,6 @@ interface GovernorateRepositoryInterface extends BaseRepositoryInterface
      * @return \App\Models\Governorate|null
      */
     public function getDefaultGovernorate();
+
+    public function getFilteredGovernorates($filters = []);
 }

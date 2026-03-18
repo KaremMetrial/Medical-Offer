@@ -15,9 +15,9 @@ class GovernorateController extends BaseController
         $this->governorateRepository = $governorateRepository;
     }
 
-    public function index(): JsonResponse
+    public function index(\App\Filters\GovernorateFilter $filter): JsonResponse
     {
-        $governorates = $this->governorateRepository->all(['*'], ['translations']);
+        $governorates = $this->governorateRepository->getFilteredGovernorates($filter);
         return $this->successResponse([
             'label' => __('message.governorates'),
             'governorates' => GovernorateResource::collection($governorates)

@@ -11,6 +11,8 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Tables\Columns\SelectColumn;
+use App\Enums\CompanionStatus;
 
 class UsersTable
 {
@@ -37,11 +39,16 @@ class UsersTable
                 TextColumn::make('role')
                     ->label(__('filament.fields.role'))
                     ->badge(),
-
+                SelectColumn::make('companion_status')
+                    ->label(__('filament.fields.companion_status'))
+                    ->options(collect(CompanionStatus::cases())->mapWithKeys(fn(CompanionStatus $case) => [$case->value => $case->getLabel()]))
+                    ->visible(fn ($livewire) => in_array($livewire->activeTab, ['all', 'companion']))
+                    ->disabled(fn ($record) => $record?->parent_user_id === null),
+                    
                 IconColumn::make('is_active')
                     ->label(__('filament.fields.is_active'))
                     ->boolean(),
-
+                
                 TextColumn::make('city.name')
                     ->label(__('filament.fields.city'))
                     ->sortable()
@@ -53,7 +60,12 @@ class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                \Filament\Tables\Filters\SelectFilter::make('role')
+                    ->label(__('filament.fields.role'))
+                    ->options(__('filament.options.role')),
+                \Filament\Tables\Filters\SelectFilter::make('companion_status')
+                    ->label(__('filament.fields.companion_status'))
+                    ->options(collect(CompanionStatus::cases())->mapWithKeys(fn(CompanionStatus $case) => [$case->value => $case->getLabel()]))
             ])
             ->recordActions([
                 EditAction::make(),

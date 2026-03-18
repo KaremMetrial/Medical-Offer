@@ -19,4 +19,11 @@ class GovernorateRepository extends BaseRepository implements GovernorateReposit
             return $this->model->find($defaultGovernorateId) ?? $this->model->first();
         });
     }
+    public function getFilteredGovernorates($filters = [])
+    {
+        return $this->model->with(['translations'])
+            ->filter($filters)
+            ->where('is_active', true)
+            ->get();
+    }
 }

@@ -57,10 +57,29 @@ class MemberPlanForm
                                 ->prefix(function ($get) {
                                     $countryId = $get('country_id');
                                     if ($countryId) {
-                                        $country = Country::find($countryId);
-                                        return $country?->currency_symbol ?? '$';
+                                        return Country::find($countryId)?->currency_symbol ?? '$';
                                     }
                                     return '$';
+                                })
+                                ->formatStateUsing(function ($state, $get) {
+                                    $countryId = $get('country_id');
+                                    if ($state !== null && $countryId) {
+                                        $country = \App\Models\Country::find($countryId);
+                                        $factor = (float)($country?->currency_factor ?: 1);
+                                        $decimals = $factor == 1000 ? 3 : 2;
+                                        $converted = app(\App\Services\CurrencyService::class)->convert((float)$state, 'USD', $country->currency_unit ?? 'USD');
+                                        return round($converted, $decimals);
+                                    }
+                                    return $state;
+                                })
+                                ->dehydrateStateUsing(function ($state, $get) {
+                                    $countryId = $get('country_id');
+                                    if ($state !== null && $countryId) {
+                                        $country = \App\Models\Country::find($countryId);
+                                        $systemBase = config('settings.currency.system_base', 'USD');
+                                        return app(\App\Services\CurrencyService::class)->convert((float)$state, $country->currency_unit ?? $systemBase, $systemBase);
+                                    }
+                                    return $state;
                                 })
                                 ->required(),
                             TextInput::make('duration_days')

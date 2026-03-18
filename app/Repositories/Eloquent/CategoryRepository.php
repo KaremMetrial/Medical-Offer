@@ -12,17 +12,19 @@ class CategoryRepository extends BaseRepository implements CategoryRepositoryInt
         parent::__construct($model);
     }
 
-    public function getActiveCategories()
+    public function getActiveCategories($filter = null)
     {
         return $this->model->with('translations')
+            ->filter($filter)
             ->where('is_active', true)
             ->where('is_show', true)
             ->orderBy('sort_order')
             ->get();
     }
-    public function getParentActiveCategoriesBySectionId($sectionId)
+    public function getParentActiveCategoriesBySectionId($sectionId, $filter = null)
     {
         return $this->model->with(['translations','children.translations'])
+            ->filter($filter)
             ->where('is_active', true)
             ->where('is_show', true)
             ->where('section_id', $sectionId)

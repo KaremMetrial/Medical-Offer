@@ -24,11 +24,13 @@ class ListUsers extends ListRecords
         return [
             'all' => Tab::make('All'),
             'user' => Tab::make(__('filament.options.role.user'))
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('role', 'user')),
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('role', 'user')->whereNull('parent_user_id')),
             'provider' => Tab::make(__('filament.options.role.provider'))
-                ->modifyQueryUsing(fn(Builder $query) => $query->where('role', 'provider')),
+                ->modifyQueryUsing(fn(Builder $query) => $query->where('role', 'provider')->whereNull('parent_user_id')),
             'admin' => Tab::make(__('filament.options.role.admin'))
-                ->modifyQueryUsing(fn(Builder $query) => $query->whereIn('role', ['admin', 'super_admin'])),
+                ->modifyQueryUsing(fn(Builder $query) => $query->whereIn('role', ['admin', 'super_admin'])->whereNull('parent_user_id')),
+            'companion' => Tab::make(__('filament.options.role.companion'))
+                ->modifyQueryUsing(fn(Builder $query) => $query->whereNotNull('parent_user_id')),
         ];
     }
 }

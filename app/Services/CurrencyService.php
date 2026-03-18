@@ -12,6 +12,8 @@ class CurrencyService
     protected string $apiBaseUrl;
     protected string $baseCurrency;
 
+    protected ?array $rates = null;
+
     public function __construct()
     {
         $this->apiKey = config('settings.currency.api_key');
@@ -24,7 +26,11 @@ class CurrencyService
      */
     public function getRates(): array
     {
-        return Cache::remember('currency_rates', now()->addHours(24), function () {
+        if ($this->rates !== null) {
+            return $this->rates;
+        }
+
+        $this->rates = Cache::remember('currency_rates', now()->addHours(24), function () {
             try {
                 if (empty($this->apiKey)) {
                     Log::warning('ExchangeRate API Key is missing. Using config fallback rates.');
@@ -39,6 +45,9 @@ class CurrencyService
                     // Update the config file with latest rates for next fallback
                     $this->updateFallbackRates($rates);
                     
+                    // Sync with Country table
+                    $this->syncWithCountriesTable($rates);
+                    
                     return $rates;
                 }
 
@@ -49,6 +58,8 @@ class CurrencyService
                 return $this->getFallbackRates();
             }
         });
+
+        return $this->rates;
     }
 
     /**
@@ -70,7 +81,7 @@ class CurrencyService
         // Formula: Amount * (RateToDestination / RateFromSource)
         // Both rates are relative to USD
         $baseAmount = $amount / $rates[$from];
-        return round($baseAmount * $rates[$to], 2);
+        return $baseAmount * $rates[$to];
     }
 
     /**
@@ -136,5 +147,22 @@ class CurrencyService
             'OMR' => 0.38,
             'JOD' => 0.71,
         ]);
+    }
+
+    /**
+     * Sync rates with countries table.
+     */
+    protected function syncWithCountriesTable(array $rates): void
+    {
+        try {
+            $countries = \App\Models\Country::all();
+            foreach ($countries as $country) {
+                $code = $country->currency_unit;
+                    // We no longer overwrite currency_factor as it's used for formatting/decimals
+                    // $country->update(['currency_factor' => $rates[$code]]);
+            }
+        } catch (\Exception $e) {
+            Log::error('Failed to sync rates with countries table: ' . $e->getMessage());
+        }
     }
 }

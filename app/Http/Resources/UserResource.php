@@ -27,8 +27,6 @@ class UserResource extends JsonResource
             'city_id'        => $this->city_id,
             'gender'         => $this->gender,
             'nationality_id' => $this->nationality_id,
-            'balance'        => (float) $this->balance, // Base balance (SAR)
-            'wallet'         => $this->getWalletInfo(),
 
             // Optional: Include relations if loaded
             'country'        => new JsonResource($this->whenLoaded('country')),
@@ -36,26 +34,8 @@ class UserResource extends JsonResource
             'city'           => new JsonResource($this->whenLoaded('city')),
             'nationality'    => new JsonResource($this->whenLoaded('nationality')),
 
-            'created_at'     => $this->created_at,
-            'updated_at'     => $this->updated_at,
-        ];
-    }
-
-    protected function getWalletInfo(): array
-    {
-        $currencyService = app(\App\Services\CurrencyService::class);
-        $systemBase = config('settings.currency.system_base', 'SAR');
-        
-        $userCountry = $this->country ?: ($this->country_id ? \App\Models\Country::find($this->country_id) : app(\App\Repositories\Contracts\CountryRepositoryInterface::class)->getDefaultCountry());
-        $userCurrency = $userCountry->currency_unit ?: 'SAR';
-
-        $localBalance = $currencyService->convert($this->balance, $systemBase, $userCurrency);
-
-        return [
-            'local_balance' => (float) $localBalance,
-            'currency_symbol' => $userCountry->currency_symbol,
-            'currency_unit' => $userCurrency,
-            'formatted_balance' => number_format($localBalance, 2) . ' ' . $userCountry->currency_symbol,
+            'created_at'     => $this->created_at?->format('Y-m-d'),
+            'updated_at'     => $this->updated_at?->format('Y-m-d'),
         ];
     }
 }

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Repositories\Contracts\CategoryRepositoryInterface;
 use App\Http\Resources\CategoryResource;
+use App\Filters\CategoryFilter;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class CategoryController extends BaseController
 {
@@ -15,18 +17,20 @@ class CategoryController extends BaseController
         $this->categoryRepository = $categoryRepository;
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $categories = $this->categoryRepository->getActiveCategories();
+        $filter = new CategoryFilter($request);
+        $categories = $this->categoryRepository->getActiveCategories($filter);
         return $this->successResponse([
             'label' => __('message.categories'),
             'categories' => CategoryResource::collection($categories)
         ]);
     }
 
-    public function getParentActiveCategoriesBySectionId($sectionId): JsonResponse
+    public function getParentActiveCategoriesBySectionId(Request $request, $sectionId): JsonResponse
     {
-        $categories = $this->categoryRepository->getParentActiveCategoriesBySectionId($sectionId);
+        $filter = new CategoryFilter($request);
+        $categories = $this->categoryRepository->getParentActiveCategoriesBySectionId($sectionId, $filter);
         return $this->successResponse([
             'label' => __('message.categories'),
             'categories' => CategoryResource::collection($categories)

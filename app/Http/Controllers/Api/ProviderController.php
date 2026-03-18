@@ -5,14 +5,17 @@ namespace App\Http\Controllers\Api;
 use App\Repositories\Contracts\{
     ProviderRepositoryInterface,
     CategoryRepositoryInterface,
-    GovernorateRepositoryInterface
+    GovernorateRepositoryInterface,
+    ReviewRepositoryInterface
 };
 use App\Http\Resources\{
     ProviderResource,
     ProviderDetailsResource,
     PaginationResource,
     GovernorateResource,
-    OfferResource
+    OfferResource,
+    ReviewResource,
+    Filters\GovernorateFilterResource
 };
 use Illuminate\Http\{
     JsonResponse,
@@ -31,56 +34,44 @@ class ProviderController extends BaseController
     public function __construct(
         private ProviderRepositoryInterface $providerRepository,
         private CategoryRepositoryInterface $categoryRepository,
-        private GovernorateRepositoryInterface $governorateRepository
+        private GovernorateRepositoryInterface $governorateRepository,
+        private ReviewRepositoryInterface $reviewRepository 
     ) {}
 
     public function index(Request $request): JsonResponse
     {
-        $filters = $request->validate([
-            'section' => 'nullable|exists:sections,type',
-            'rating' => 'nullable|in:' . implode(',', RatingType::values()),
-            'discount' => 'nullable|in:' . implode(',', DiscountType::values()),
-            'governorate_id' => 'nullable|exists:governorates,id'
-        ]);
+        $filters = $this->filterValidation($request);
         $providers = $this->providerRepository->getFilteredPaginatedProviders(new ProviderFilter($request), 15);
         $governorates = $this->governorateRepository->all(['*'], ['translations']);
-        
+
         return $this->successResponse([
             'title' => __('message.providers'),
             'sub_title' => __('message.providers'),
             'providers' => ProviderResource::collection($providers),
             'pagination' => new PaginationResource($providers),
-            'filters' => [
-                'section' => SectionType::options(),
-                'rating' => RatingType::options(),
-                'discount' => DiscountType::options(),
-                'governorate_id' => GovernorateResource::collection($governorates),
-            ],
-            'selected_filters' => [
-                'section' => [
-                    'name' => $request->section ? SectionType::getLabelByValue($request->section) : null,
-                    'value' => $request->section,
-                ],
-                'rating' => [
-                    'name' => $request->rating ? RatingType::getLabelByValue($request->rating) : null,
-                    'value' => $request->rating,
-                ],
-                'discount' => [
-                    'name' => $request->discount ? DiscountType::getLabelByValue($request->discount) : null,
-                    'value' => $request->discount,
-                ],
-                'governorate_id' => [
-                    'name' => $request->governorate_id ? $this->governorateRepository->findOrFail($request->governorate_id, ['*'], ['translations'])->name : null,
-                    'value' => $request->governorate_id,
-                ],
-            ]
+            'filters' => $this->filterOptions($request, $governorates),
         ]);
     }
-
+    private function filterOptions($request, $governorates = null)
+    {
+        $governorates = $governorates ?? $this->governorateRepository->all(['*'], ['translations']);
+        return [
+            SectionType::optionsWithSelected($request->section),
+            RatingType::optionsWithSelected($request->rating),
+            DiscountType::optionsWithSelected($request->discount),
+            [
+                'items' => GovernorateFilterResource::collection($governorates),
+                'selected' => $request->governorate_id,
+                'selected_label' => $request->governorate_id ? $governorates->find($request->governorate_id)->name : null,
+                'label' => __('message.governorate'),
+                'key'=> 'governorate'
+            ],
+        ];
+    }
     public function show($id): JsonResponse
     {
-        $provider = $this->providerRepository->getDetails($id);        
-
+        $provider = $this->providerRepository->getDetails($id);
+        $reviews = $this->reviewRepository->getReviewsByProviderId($id);
         // Increment views (visits)
         $provider->increment('views');
 
@@ -89,6 +80,8 @@ class ProviderController extends BaseController
         return $this->successResponse([
             'provider' => new ProviderDetailsResource($provider),
             'offers' => OfferResource::collection($provider->offers),
+            'reviews' => ReviewResource::collection($reviews),
+            'pagination' => new PaginationResource($reviews),
             'labels' => [
                 'title' => __($titleKey),
                 'sub_title' => $provider->name,
@@ -106,7 +99,7 @@ class ProviderController extends BaseController
     }
     private function getProviderLabel($sectionType)
     {
-        return match($sectionType) {
+        return match ($sectionType) {
             SectionType::DOCTORS => 'message.details_doctors',
             SectionType::LABS => 'message.details_labs',
             SectionType::PHARMACIES => 'message.details_pharmacies',
@@ -116,12 +109,7 @@ class ProviderController extends BaseController
     }
     public function getProvidersByCategory($categoryId, Request $request): JsonResponse
     {
-        $filters = $request->validate([
-            'section' => 'nullable|exists:sections,type',
-            'rating' => 'nullable|in:' . implode(',', RatingType::values()),
-            'discount' => 'nullable|in:' . implode(',', DiscountType::values()),
-            'governorate_id' => 'nullable|exists:governorates,id'
-        ]);
+        $filters = $this->filterValidation($request);
         $category = $this->categoryRepository->findOrFail($categoryId, ['*'], ['parent.translations']);
         $governorates = $this->governorateRepository->all(['*'], ['translations']);
         $providers = $this->providerRepository->getProvidersByCategory($categoryId, new ProviderFilter($request), 15);
@@ -130,30 +118,16 @@ class ProviderController extends BaseController
             'sub_title' => $category->name,
             'providers' => ProviderResource::collection($providers),
             'pagination' => new PaginationResource($providers),
-            'filters' => [
-                'section' => SectionType::options(),
-                'rating' => RatingType::options(),
-                'discount' => DiscountType::options(),
-                'governorate_id' => GovernorateResource::collection($governorates),
-            ],
-            'selected_filters' => [
-                'section' => [
-                    'name' => $request->section ? SectionType::getLabelByValue($request->section) : null,
-                    'value' => $request->section,
-                ],
-                'rating' => [
-                    'name' => $request->rating ? RatingType::getLabelByValue($request->rating) : null,
-                    'value' => $request->rating,
-                ],  
-                'discount' => [
-                    'name' => $request->discount ? DiscountType::getLabelByValue($request->discount) : null,
-                    'value' => $request->discount,
-                ],
-                'governorate_id' => [
-                    'name' => $request->governorate_id ? $this->governorateRepository->findOrFail($request->governorate_id, ['*'], ['translations'])->name : null,
-                    'value' => $request->governorate_id,
-                ],
-            ]
+            'filters' => $this->filterOptions($request, $governorates),
+        ]);
+    }
+    private function filterValidation($request)
+    {
+        return $request->validate([
+            'section' => 'nullable|in:' . implode(',', SectionType::values()),
+            'rating' => 'nullable|in:' . implode(',', RatingType::values()),
+            'discount' => 'nullable|in:' . implode(',', DiscountType::values()),
+            'governorate_id' => 'nullable|exists:governorates,id'
         ]);
     }
 }

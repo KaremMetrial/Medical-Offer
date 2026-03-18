@@ -12,6 +12,7 @@ class GovernorateResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'cities' => CityResource::collection($this->whenLoaded('cities')),
         ];
     }
 }

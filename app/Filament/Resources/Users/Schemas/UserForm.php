@@ -14,7 +14,7 @@ use App\Models\Country;
 use App\Models\Governorate;
 use App\Models\City;
 use App\Models\Nationality;
-
+use App\Enums\{UserRole, CompanionStatus, RelationshipType};
 use App\Traits\UploadTrait;
 
 class UserForm
@@ -51,15 +51,15 @@ class UserForm
                                 ->live(),
                             Select::make('governorate_id')
                                 ->label(__('filament.fields.governorate'))
-                                ->relationship('governorate', 'id')
-                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                // ->relationship('governorate', 'id')
+                                // ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
                                 ->options(fn(callable $get) => Governorate::where('country_id', $get('country_id'))->with('translations')->get()->pluck('name', 'id'))
                                 ->searchable()
                                 ->live(),
                             Select::make('city_id')
                                 ->label(__('filament.fields.city'))
-                                ->relationship('city', 'id')
-                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                // ->relationship('city', 'id')
+                                // ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
                                 ->options(fn(callable $get) => City::where('governorate_id', $get('governorate_id'))->with('translations')->get()->pluck('name', 'id'))
                                 ->searchable(),
                             Select::make('gender')
@@ -84,8 +84,8 @@ class UserForm
                                 ->label(__('filament.fields.password'))
                                 ->password()
                                 ->dehydrateStateUsing(fn($state) => Hash::make($state))
-                                ->dehydrated(fn($state) => filled($state))
-                                ->required(fn(string $context): bool => $context === 'create'),
+                                ->dehydrated(fn($state) => filled($state)),
+                                // ->required(fn(string $context): bool => $context === 'create'),
                         ]),
                 ])->columnSpan(3),
 
@@ -103,8 +103,16 @@ class UserForm
                         ->schema([
                             Select::make('role')
                                 ->label(__('filament.fields.role'))
-                                ->options(__('filament.options.role'))
+                                ->options(collect(UserRole::cases())->mapWithKeys(fn(UserRole $case) => [$case->value => $case->getLabel()]))
                                 ->required(),
+                            Select::make('relationship')
+                                ->label(__('filament.fields.relationship'))
+                                ->options(collect(RelationshipType::cases())->mapWithKeys(fn(RelationshipType $case) => [$case->value => $case->getLabel()]))
+                                ->visible(fn($record) => $record?->parent_user_id !== null),
+                            Select::make('companion_status')
+                                ->label(__('filament.fields.companion_status'))
+                                ->options(collect(CompanionStatus::cases())->mapWithKeys(fn(CompanionStatus $case) => [$case->value => $case->getLabel()]))
+                                ->visible(fn($record) => $record?->parent_user_id !== null),
                             Toggle::make('is_active')
                                 ->label(__('filament.fields.is_active'))
                                 ->default(true),

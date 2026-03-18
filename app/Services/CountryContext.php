@@ -8,6 +8,7 @@ namespace App\Services;
 class CountryContext
 {
     protected ?int $countryId = null;
+    protected ?\App\Models\Country $country = null;
 
     /**
      * Set the current country ID.
@@ -15,6 +16,7 @@ class CountryContext
     public function setCountryId(?int $id): void
     {
         $this->countryId = $id;
+        $this->country = null; // Reset cached model
     }
 
     /**
@@ -23,6 +25,17 @@ class CountryContext
     public function getCountryId(): ?int
     {
         return $this->countryId;
+    }
+
+    /**
+     * Get the current country model.
+     */
+    public function getCountry(): ?\App\Models\Country
+    {
+        if ($this->country === null && $this->hasCountryId()) {
+            $this->country = \App\Models\Country::find($this->countryId);
+        }
+        return $this->country;
     }
 
     /**

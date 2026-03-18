@@ -11,14 +11,24 @@ class InvoiceResource extends JsonResource
     {
         $title = $this->getInvoiceTitle();
 
+        $targetCountry = $this->payable?->plan?->country;
+        $targetCurrency = $targetCountry?->currency_unit ?: 'KWD';
+        $factor = (float)($targetCountry?->currency_factor ?: 1000);
+        $decimals = $factor == 1000 ? 3 : 2;
+        
+        $currencyService = app(\App\Services\CurrencyService::class);
+        $systemBase = config('settings.currency.system_base', 'USD');
+        $localAmount = $currencyService->convert((float)$this->amount, $systemBase, $targetCurrency);
+        $localAmountRounded = round($localAmount, $decimals);
+        $symbol = $targetCountry?->currency_symbol ?? 'د.ك';
+
         return [
             'id' => $this->id,
             'title' => $title,
             'date' => $this->created_at?->format('Y/m/d'),
-            'amount' => (float)$this->amount,
-            // Assuming we pull currency from the related country if available, or use a default
-            'currency' => $this->payable?->plan?->country?->currency_symbol ?? 'د.ك',
-            'amount_formatted' => $this->amount . ' ' . ($this->payable?->plan?->country?->currency_symbol ?? 'د.ك'),
+            'amount' => $localAmountRounded,
+            'currency_symbol' => $symbol,
+            'amount_formatted' => $localAmountRounded . ' ' . $symbol,
             'status' => $this->status,
             'status_label' => $this->status === 'paid' ? __('message.paid') : __('message.unpaid'),
             'reference' => $this->provider_ref,

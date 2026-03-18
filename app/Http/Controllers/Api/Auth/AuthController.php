@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\UserResource;
+use Illuminate\Http\Request;
 
 class AuthController extends BaseController
 {
@@ -70,5 +71,26 @@ class AuthController extends BaseController
         }
 
         return $this->successResponse($result, __('message.registration_successfully'));
+    }
+
+    public function profile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        return $this->successResponse([
+            'user' => new UserResource($user),
+        ], __('message.profile_retrieved_successfully'));
+    }
+
+    public function updateProfile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $data = $request->validated();
+        if ($request->hasFile('avatar')) {
+            $data['avatar'] = $this->storeImage($request->file('avatar'), 'users/avatars');
+        }
+        $user->update($data);
+        return $this->successResponse([
+            'user' => new UserResource($user),
+        ], __('message.profile_updated_successfully'));
     }
 }

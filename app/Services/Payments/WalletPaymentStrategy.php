@@ -12,17 +12,12 @@ class WalletPaymentStrategy implements PaymentStrategyInterface
     public function process(User $user, MemberPlan $plan): array
     {
         $currencyService = app(\App\Services\CurrencyService::class);
-        $systemBaseCurrency = config('settings.currency.system_base', 'EGP');
+        $systemBaseCurrency = config('settings.currency.system_base', 'USD');
         
-        // 1. Get Currencies
-        $planCountry = $plan->country ?: ($plan->country_id ? \App\Models\Country::find($plan->country_id) : app(\App\Repositories\Contracts\CountryRepositoryInterface::class)->getDefaultCountry());
-        $planCurrency = $planCountry->currency_unit ?: 'SAR';
+        // Prices and Balances are now stored in USD (System Base)
+        $priceInSystemBase = $plan->price;
 
-        // 2. Convert Plan Price to System Base Currency (SAR)
-        // If users pay in SAR, we need to know how much SAR the plan costs
-        $priceInSystemBase = $currencyService->convert($plan->price, $planCurrency, $systemBaseCurrency);
-
-        // 3. Check Balance (Balance is stored in System Base: SAR)
+        // 3. Check Balance (Balance is stored in System Base: USD)
         if ($user->balance < $priceInSystemBase) {
             return [
                 'success' => false,
@@ -33,7 +28,7 @@ class WalletPaymentStrategy implements PaymentStrategyInterface
         try {
             DB::beginTransaction();
 
-            // Deduct balance (Deduction in SAR)
+            // Deduct balance (Deduction in USD)
             $user->decrement('balance', $priceInSystemBase);
 
             DB::commit();
@@ -42,7 +37,7 @@ class WalletPaymentStrategy implements PaymentStrategyInterface
                 'success' => true,
                 'message' => __('message.payment_successful_wallet'),
                 'transaction_id' => 'WLT-' . strtoupper(uniqid()),
-                'deducted_amount' => $priceInSystemBase, // Deduction record in SAR
+                'deducted_amount' => $priceInSystemBase, // Deduction record in USD
             ];
         } catch (\Exception $e) {
             DB::rollBack();
