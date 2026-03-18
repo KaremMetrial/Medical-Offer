@@ -69,6 +69,11 @@ return [
         'label' => 'طلب كارت',
         'plural_label' => 'طلبات الكروت',
     ],
+    'wallet_transaction' => [
+        'label' => 'معاملة المحفظة',
+        'plural_label' => 'معاملات المحفظة',
+        'total_amount' => 'إجمالي المبلغ',
+    ],
     'user' => [
         'label' => 'الأعضاء',
         'plural_label' => 'الأعضاء',
@@ -82,6 +87,7 @@ return [
         'settings' => 'الإعدادات',
         'general' => 'المعلومات العامة',
         'categories' => 'التصنيفات',
+        'transaction_details' => 'تفاصيل المعاملة',
     ],
     'card_request_status' => [
         'pending' => 'قيد الانتظار',
@@ -180,6 +186,10 @@ return [
         'issuance_fee' => 'رسوم الإصدار',
         'delivery_fee' => 'رسوم التوصيل',
         'total_amount' => 'إجمالي المبلغ',
+        'final_amount' => 'المبلغ النهائي',
+        'balance_after' => 'الرصيد بعد',
+        'balance_before' => 'الرصيد قبل',
+        'reference' => 'المرجع',
     ],
     'groups' => [
         'details' => 'التفاصيل',
@@ -192,6 +202,8 @@ return [
             'billing' => 'الاشتراكات والفوترة',
             'locations' => 'إعدادات المواقع',
             'users' => 'التحكم بالوصول',
+            'wallet' => 'المحفظة',
+            'financial' => 'المالية',
         ],
     ],
     'options' => [
@@ -244,6 +256,12 @@ return [
         'gender' => [
             'male' => 'ذكر',
             'female' => 'أنثى',
+        ],
+        'transaction_type' => [
+            'deposit' => 'إيداع',
+            'withdrawal' => 'سحب',
+            'payment' => 'دفع',
+            'refund' => 'استرداد',
         ],
     ],
     'widgets' => [

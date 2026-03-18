@@ -69,6 +69,11 @@ return [
         'label' => 'Card Request',
         'plural_label' => 'Card Requests',
     ],
+    'wallet_transaction' => [
+        'label' => 'Wallet Transaction',
+        'plural_label' => 'Wallet Transactions',
+        'total_amount' => 'Total Amount',   
+    ],
     'user' => [
         'label' => 'User',
         'plural_label' => 'Users',
@@ -82,6 +87,7 @@ return [
         'settings' => 'Settings',
         'general' => 'General Information',
         'categories' => 'Categories',
+        'transaction_details' => 'Transaction Details',
     ],
     'fields' => [
         'title' => 'Title',
@@ -174,6 +180,9 @@ return [
         'issuance_fee' => 'Issuance Fee',
         'delivery_fee' => 'Delivery Fee',
         'total_amount' => 'Total Amount',
+        'balance_after' => 'Balance After',
+        'balance_before' => 'Balance Before',
+        'reference' => 'Reference',
     ],
     'groups' => [
         'details' => 'Details',
@@ -186,6 +195,8 @@ return [
             'billing' => 'Subscription & Billing',
             'locations' => 'Location Settings',
             'users' => 'Access Control',
+            'wallet' => 'Wallet',
+            'financial' => 'Financial',
         ],
     ],
     'options' => [
@@ -238,6 +249,12 @@ return [
         'gender' => [
             'male' => 'Male',
             'female' => 'Female',
+        ],
+        'transaction_type' => [
+            'deposit' => 'Deposit',
+            'withdrawal' => 'Withdrawal',
+            'payment' => 'Payment',
+            'refund' => 'Refund',
         ],
     ],
     'widgets' => [

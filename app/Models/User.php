@@ -86,6 +86,10 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     {
         return $this->hasMany(CardRequest::class);
     }
+    public function walletTransactions()
+    {
+        return $this->hasMany(WalletTransaction::class);
+    }
     public function parentUser()
     {
         return $this->belongsTo(User::class, 'parent_user_id');

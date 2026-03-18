@@ -26,6 +26,7 @@ return [
         \App\Repositories\Contracts\MemberPlanRepositoryInterface::class => \App\Repositories\Eloquent\MemberPlanRepository::class,
         \App\Repositories\Contracts\SubscriptionRepositoryInterface::class => \App\Repositories\Eloquent\SubscriptionRepository::class,
         \App\Repositories\Contracts\CardRequestRepositoryInterface::class => \App\Repositories\Eloquent\CardRequestRepository::class,
+        \App\Repositories\Contracts\WalletTransactionRepositoryInterface::class => \App\Repositories\Eloquent\WalletTransactionRepository::class,
     ],
     /*
     |--------------------------------------------------------------------------

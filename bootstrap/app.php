@@ -28,6 +28,16 @@ return Application::configure(basePath: dirname(__DIR__))
             SetLocaleMiddleware::class,
             SetCountryMiddleware::class
         ]);
+        $middleware->redirectGuestsTo(function (Request $request) {
+            if ($request->is('api/*')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => __('message.unauthenticated'),
+                    'data'    => null,
+                ], 401);
+            }
+            return null;
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(function (Request $request, Throwable $e) {

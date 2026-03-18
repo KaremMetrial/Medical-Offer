@@ -22,6 +22,7 @@ use App\Http\Controllers\Api\{
     PageController,
     SubscriptionController,
     CardRequestController,
+    WalletController,
 };
 Route::prefix('v1')->group(function(){
     Route::get('/faqs', [PageController::class, 'faqs']);
@@ -66,6 +67,7 @@ Route::prefix('v1')->group(function(){
         Route::get('/discounts', 'discounts')->name('discounts');
         Route::get('/sections', 'sections')->name('sections');
         Route::get('/relationship-types', 'relationshipTypes')->name('relationshipTypes');
+        Route::get('/wallet-transaction-types', 'walletTransactionTypes')->name('walletTransactionTypes');
     });
 
     Route::prefix('providers')->controller(ProviderController::class)->name('providers.')->group(function () {
@@ -90,7 +92,7 @@ Route::prefix('v1')->group(function(){
             Route::get('/', 'index')->name('index');
             Route::get('/upgrate-plans', 'upgratePlans')->name('upgrate-plans');
             Route::post('/add-companion', 'addCompanion')->name('add-companion');
-            Route::post('/subscribe', 'subscribe')->name('subscribe');
+            Route::post('/', 'subscribe')->name('subscribe');
             Route::get('/invoices', 'invoices')->name('invoices');
         });
 
@@ -108,6 +110,11 @@ Route::prefix('v1')->group(function(){
             Route::get('/init', 'init');
             Route::post('/', 'store');
             Route::get('/status', 'status');
+        });
+
+        Route::prefix('wallet')->controller(WalletController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::get('/transactions', 'transactions');
         });
     });
 });
