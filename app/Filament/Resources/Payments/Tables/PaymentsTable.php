@@ -36,7 +36,10 @@ class PaymentsTable
 
                 TextColumn::make('amount')
                     ->label(__('filament.fields.amount'))
-                    ->money('USD')
+                    ->formatStateUsing(function ($state) {
+                        $finalPrice = app(\App\Services\CurrencyService::class)->convert((float) $state, 'USD', 'EGP');
+                        return number_format($finalPrice, 2) . ' EGP';
+                    })
                     ->sortable(),
 
                 TextColumn::make('method')

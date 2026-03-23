@@ -30,22 +30,20 @@ class WithdrawalsTable
                 
                 TextColumn::make('amount')
                     ->label(__('filament.fields.amount'))
-                    ->formatStateUsing(function ($state, $record) {
-                        $unit = $record->user->country->currency_unit ?? 'EGP';
+                    ->formatStateUsing(function ($state) {
                         $systemBase = config('settings.currency.system_base', 'USD');
-                        $finalPrice = app(\App\Services\CurrencyService::class)->convert((float) $state, $systemBase, $unit);
-                        return number_format($finalPrice, 2) . ' ' . $unit;
+                        $finalPrice = app(\App\Services\CurrencyService::class)->convert((float) $state, $systemBase, 'EGP');
+                        return number_format($finalPrice, 2) . ' EGP';
                     })
                     ->sortable(),
 
 
                 TextColumn::make('net_amount')
                     ->label(__('filament.fields.total_amount'))
-                    ->formatStateUsing(function ($state, $record) {
-                        $unit = $record->user->country->currency_unit ?? 'EGP';
+                    ->formatStateUsing(function ($state) {
                         $systemBase = config('settings.currency.system_base', 'USD');
-                        $finalPrice = app(\App\Services\CurrencyService::class)->convert((float) $state, $systemBase, $unit);
-                        return number_format($finalPrice, 2) . ' ' . $unit;
+                        $finalPrice = app(\App\Services\CurrencyService::class)->convert((float) $state, $systemBase, 'EGP');
+                        return number_format($finalPrice, 2) . ' EGP';
                     })
                     ->sortable()
                     ->summarize([

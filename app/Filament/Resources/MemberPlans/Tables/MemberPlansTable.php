@@ -36,14 +36,9 @@ class MemberPlansTable
 
                 TextColumn::make('price')
                     ->label(__('filament.fields.price'))
-                    ->formatStateUsing(function ($state, $record) {
-                        $symbol = $record->country?->currency_symbol ?? '$';
-                        $unit   = $record->country?->currency_unit   ?? 'USD';
-                        $factor = (float)($record->country?->currency_factor ?: 1);
-                        $decimals = $factor == 1000 ? 3 : 2;
-                        $finalPrice = app(CurrencyService::class)->convert((float) $state, 'USD', $unit);
-                        $finalPrice = round($finalPrice, $decimals);
-                        return $finalPrice . ' ' . $symbol;
+                    ->formatStateUsing(function ($state) {
+                        $finalPrice = app(\App\Services\CurrencyService::class)->convert((float) $state, 'USD', 'EGP');
+                        return number_format($finalPrice, 2) . ' EGP';
                     })
                     ->sortable(),
 
