@@ -41,6 +41,7 @@ class RegisterRequest extends FormRequest
             'gender'     => ['nullable', 'in:male,female'],
             'nationality_id' => ['nullable', 'exists:nationalities,id'],
             'avatar'     => $this->imageRules(),
+            'fcm_token'  => ['nullable', 'string'],
         ];
     }
 }

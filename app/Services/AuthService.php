@@ -61,7 +61,7 @@ class AuthService
      * @param string $otp
      * @return array Result with token if registered, or status for registration
      */
-    public function verifyOtp(string $phone, string $otp): array
+    public function verifyOtp(string $phone, string $otp, ?string $fcmToken = null): array
     {
         $user = $this->userRepository->findByPhone($phone);
 
@@ -71,12 +71,14 @@ class AuthService
             ]);
         }
 
-        // If user is already active/registered, log them in
         if ($user->is_active) {
-            $token = $user->createToken('auth_token')->plainTextToken;
+            $tokenResult = $user->createToken('auth_token');
+            if ($fcmToken) {
+                $tokenResult->accessToken->update(['fcm_token' => $fcmToken]);
+            }
             return [
                 'registered' => true,
-                'token'      => $token,
+                'token'      => $tokenResult->plainTextToken,
                 'user'       => $user,
             ];
         }
@@ -121,7 +123,11 @@ class AuthService
             'role'       => 'user', // Default role
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $tokenResult = $user->createToken('auth_token');
+        if (isset($data['fcm_token'])) {
+            $tokenResult->accessToken->update(['fcm_token' => $data['fcm_token']]);
+        }
+        $token = $tokenResult->plainTextToken;
 
         return [
             'token' => $token,

@@ -90,6 +90,11 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     {
         return $this->hasMany(WalletTransaction::class);
     }
+    public function withdrawals()
+    {
+        return $this->hasMany(Withdrawal::class);
+    }
+
     public function parentUser()
     {
         return $this->belongsTo(User::class, 'parent_user_id');
@@ -245,5 +250,19 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
     public function unreadNotificationsCount(): int
     {
         return $this->unread_notifications_count ?? $this->notifications()->where('read_at', null)->count() ?? 0;
+    }
+
+    /**
+     * Route notifications for the Firebase channel.
+     *
+     * @param  \Illuminate\Notifications\Notification  $notification
+     * @return string|array|null
+     */
+    public function routeNotificationForFirebase($notification)
+    {
+        return $this->tokens()
+            ->whereNotNull('fcm_token')
+            ->pluck('fcm_token')
+            ->toArray();
     }
 }

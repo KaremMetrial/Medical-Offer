@@ -23,10 +23,17 @@ use App\Http\Controllers\Api\{
     SubscriptionController,
     CardRequestController,
     WalletController,
+    WithdrawalController,
+    NotificationController,
+    VisitController,
+    ComplaintController
 };
+
 Route::prefix('v1')->group(function(){
     Route::get('/faqs', [PageController::class, 'faqs']);
     Route::get('/terms', [PageController::class, 'terms']);
+    Route::get('/contact-us', [PageController::class, 'contactUs']);
+
 
     Route::prefix('member-plans')->controller(MemberPlanController::class)->name('member-plans.')->group(function () {
         Route::get('/', 'index')->name('index');
@@ -68,6 +75,7 @@ Route::prefix('v1')->group(function(){
         Route::get('/sections', 'sections')->name('sections');
         Route::get('/relationship-types', 'relationshipTypes')->name('relationshipTypes');
         Route::get('/wallet-transaction-types', 'walletTransactionTypes')->name('walletTransactionTypes');
+        Route::get('/notification-types', 'notificationTypes')->name('notificationTypes');
     });
 
     Route::prefix('providers')->controller(ProviderController::class)->name('providers.')->group(function () {
@@ -83,9 +91,17 @@ Route::prefix('v1')->group(function(){
     Route::get('/governorates', [GovernorateController::class, 'index']);    
     Route::get('/countries', [CountryController::class, 'index']);
     Route::get('/cities', [CityController::class, 'index']);
+
+    Route::prefix('visits')->controller(VisitController::class)->name('visits.')->group(function () {
+        Route::get('/', 'index')->name('index');
+        Route::get('/{id}', 'show')->name('show');
+    });
+
     
     Route::get('/offers', [OfferController::class, 'index']);
     Route::get('/offers/{id}', [OfferController::class, 'show']);
+    Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');
+
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('subscription')->controller(SubscriptionController::class)->name('subscription.')->group(function () {
@@ -101,9 +117,14 @@ Route::prefix('v1')->group(function(){
             Route::post('/toggle', 'toggle')->name('toggle');
         });
 
+        Route::prefix('reviews')->controller(ReviewController::class)->name('reviews.')->group(function () {
+            Route::post('/', 'store')->name('store');
+        });
+
         Route::prefix('profile')->controller(AuthController::class)->name('profile.')->group(function () {
             Route::get('/', 'profile')->name('index');
             Route::post('/', 'updateProfile')->name('update');
+            Route::post('/fcm-token', 'updateFcmToken')->name('updateFcmToken');
         });
 
         Route::prefix('card-request')->controller(CardRequestController::class)->group(function () {
@@ -116,5 +137,19 @@ Route::prefix('v1')->group(function(){
             Route::get('/', 'index');
             Route::get('/transactions', 'transactions');
         });
+
+        Route::prefix('withdrawals')->controller(WithdrawalController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::post('/', 'store');
+            Route::get('/{id}', 'show');
+        });
+
+        Route::prefix('notifications')->controller(NotificationController::class)->group(function () {
+            Route::get('/', 'index');
+            Route::patch('/{id}/read', 'markAsRead');
+            Route::post('/read-all', 'markAllAsRead');
+            Route::delete('/{id}', 'destroy');
+        });
     });
 });
+

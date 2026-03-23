@@ -28,4 +28,19 @@ class PageController extends BaseController
             'content' => __('pages.terms.content'),
         ]);
     }
+
+    /**
+
+     * Get Contact Us Information.
+     */
+    public function contactUs(): JsonResponse
+    {
+        return $this->successResponse([
+            'title' => __('pages.contact_us.title'),
+            'email' => __('pages.contact_us.email'),
+            'phone' => __('pages.contact_us.phone'),
+            'whatsapp' => __('pages.contact_us.whatsapp'),
+        ]);
+    }
 }
+

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Repositories\Contracts\FavoriteRepositoryInterface;
+use App\Http\Resources\PaginationResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -28,12 +29,17 @@ class FavoriteController extends BaseController
             ? __('message.added_to_favorites') 
             : __('message.removed_from_favorites');
 
-        return $this->successResponse($result, $message);
+        return $this->successResponse([
+            'status' => $result['status'],
+            'is_added' => $result['status'] == 'added',
+        ], $message);
     }
 
     public function index(): JsonResponse
     {
         $favorites = $this->favoriteRepository->getUserFavorites(auth('sanctum')->id());
-        return $this->successResponse($favorites);
+        return $this->successResponse([
+            'favorites' => $favorites,
+        ]);
     }
 }

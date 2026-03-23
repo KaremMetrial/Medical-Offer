@@ -80,4 +80,11 @@ return [
             "12. Technical Support\n\n" .
             "For any inquiry or problem, you can contact the support team through the 'Help' section inside the app, and you will be answered as soon as possible.",
     ],
+    'contact_us' => [
+        'title' => 'Contact Us',
+        'email' => 'care@medicaloffer.net',
+        'phone' => '+201006567821',
+        'whatsapp' => 'https://wa.me/201006567821',
+    ],
 ];
+

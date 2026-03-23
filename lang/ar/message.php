@@ -196,4 +196,6 @@ return [
     'wallet_transaction_types' => 'أنواع معاملات المحفظة',
     'deposit' => 'إيداع',
     'withdraw' => 'سحب',
+    'review_submitted_successfully' => 'تم تقديم التقييم بنجاح.',
+    'fcm_token_updated_successfully' => 'تم تحديث رمز الإشعارات بنجاح.',
 ];

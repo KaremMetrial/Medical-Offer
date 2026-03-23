@@ -21,4 +21,12 @@ class ReviewRepository extends BaseRepository implements ReviewRepositoryInterfa
             ->select($columns)
             ->paginate($perPage);
     }
+
+    public function storeReview(array $data)
+    {
+        return $this->model->create(array_merge($data, [
+            'status' => 'pending'
+        ]));
+    }
 }
+

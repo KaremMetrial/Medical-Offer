@@ -97,6 +97,26 @@ return [
         'delivered' => 'تم التوصيل',
         'cancelled' => 'تم الإلغاء',
     ],
+    'withdrawal' => [
+        'label' => 'السحوبات',
+        'plural_label' => 'السحوبات',
+        'total_amount' => 'اجمالي المبلغ',
+    ],
+    'manual_notification' => [
+        'label' => 'إشعار يدوي',
+        'plural_label' => 'الإشعارات اليدوية',
+    ],
+    'visit' => [
+        'label' => 'الزيارة',
+        'plural_label' => 'الزيارات',
+    ],
+    'complaint' => [
+        'label' => 'الشكوى',
+        'plural_label' => 'الشكاوى',
+    ],
+
+
+
     'fields' => [
         'title' => 'العنوان',
         'description' => 'الوصف',
@@ -189,8 +209,12 @@ return [
         'final_amount' => 'المبلغ النهائي',
         'balance_after' => 'الرصيد بعد',
         'balance_before' => 'الرصيد قبل',
-        'reference' => 'المرجع',
+        'target_type' => 'الجمهور المستهدف',
+        'title' => 'العنوان',
+        'message' => 'الرسالة',
+        'services' => 'الخدمات',
     ],
+
     'groups' => [
         'details' => 'التفاصيل',
         'financials' => 'الرسوم',
@@ -204,8 +228,12 @@ return [
             'users' => 'التحكم بالوصول',
             'wallet' => 'المحفظة',
             'financial' => 'المالية',
+            'visits' => 'الزيارات',
+            'support' => 'الدعم الفني',
         ],
     ],
+
+
     'options' => [
         'all' => 'الكل',
         'offer' => 'عرض',
@@ -263,6 +291,12 @@ return [
             'payment' => 'دفع',
             'refund' => 'استرداد',
         ],
+        'target_type' => [
+            'all' => 'الكل',
+            'specific' => 'محدد',
+            'all-users' => 'جميع المستخدمين',
+        ],
+
     ],
     'widgets' => [
         'total_users' => 'إجمالي المستخدمين',

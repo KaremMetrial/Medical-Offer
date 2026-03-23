@@ -6,28 +6,32 @@ enum WalletTransactionType: string
 {
     case CREDIT = 'credit';
     case DEBIT = 'debit';
+    case DEPOSIT = 'deposit';
+    case WITHDRAW = 'withdraw';
 
     public function getLabel(): string
     {
         return match ($this) {
             self::CREDIT => __('message.credit'),
             self::DEBIT => __('message.debit'),
+            self::DEPOSIT => __('message.deposit'),
+            self::WITHDRAW => __('message.withdraw'),
         };
     }
 
     public function getColor(): string
     {
         return match ($this) {
-            self::CREDIT => 'success',
-            self::DEBIT => 'danger',
+            self::CREDIT, self::DEPOSIT => 'success',
+            self::DEBIT, self::WITHDRAW => 'danger',
         };
     }
 
     public function getIcon(): string
     {
         return match ($this) {
-            self::CREDIT => 'heroicon-o-plus-circle',
-            self::DEBIT => 'heroicon-o-minus-circle',
+            self::CREDIT, self::DEPOSIT => 'heroicon-o-plus-circle',
+            self::DEBIT, self::WITHDRAW => 'heroicon-o-minus-circle',
         };
     }
 
@@ -53,10 +57,7 @@ enum WalletTransactionType: string
 
     public static function getLabelByValue($value): ?string
     {
-        return match ($value) {
-            self::DEPOSIT->value => __('message.deposit'),
-            self::WITHDRAW->value => __('message.withdraw'),
-            default => null,
-        };
+        $case = self::tryFrom($value);
+        return $case ? $case->getLabel() : null;
     }
 }

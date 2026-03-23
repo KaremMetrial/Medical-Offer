@@ -31,8 +31,9 @@ class VerifyOtpRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone' => ['required', 'string', 'regex:/^([0-9\s\-\+\(\)]*)$/'],
-            'otp'   => ['required', 'string', 'digits:4'],
+            'phone'     => ['required', 'string', 'regex:/^([0-9\s\-\+\(\)]*)$/'],
+            'otp'       => ['required', 'string', 'digits:4'],
+            'fcm_token' => ['nullable', 'string'],
         ];
     }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Auth;
 use App\Http\Controllers\Api\BaseController;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Http\Requests\Auth\SendOtpRequest;
+use App\Http\Requests\Auth\UpdateProfileRequest;
 use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Services\AuthService;
 use Illuminate\Http\JsonResponse;
@@ -44,7 +45,7 @@ class AuthController extends BaseController
      */
     public function verifyOtp(VerifyOtpRequest $request): JsonResponse
     {
-        $result = $this->authService->verifyOtp($request->phone, $request->otp);
+        $result = $this->authService->verifyOtp($request->phone, $request->otp, $request->fcm_token);
 
         if ($result['registered'] && isset($result['user'])) {
             $result['user'] = new UserResource($result['user']);
@@ -81,7 +82,7 @@ class AuthController extends BaseController
         ], __('message.profile_retrieved_successfully'));
     }
 
-    public function updateProfile(Request $request): JsonResponse
+    public function updateProfile(UpdateProfileRequest $request): JsonResponse
     {
         $user = $request->user();
         $data = $request->validated();
@@ -89,8 +90,25 @@ class AuthController extends BaseController
             $data['avatar'] = $this->storeImage($request->file('avatar'), 'users/avatars');
         }
         $user->update($data);
+
+        if ($request->fcm_token) {
+            $user->currentAccessToken()->update(['fcm_token' => $request->fcm_token]);
+        }
         return $this->successResponse([
             'user' => new UserResource($user),
         ], __('message.profile_updated_successfully'));
+    }
+
+    public function updateFcmToken(Request $request): JsonResponse
+    {
+        $request->validate([
+            'fcm_token' => 'required|string',
+        ]);
+
+        $request->user()->currentAccessToken()->update([
+            'fcm_token' => $request->fcm_token,
+        ]);
+
+        return $this->successResponse(null, __('message.fcm_token_updated_successfully'));
     }
 }

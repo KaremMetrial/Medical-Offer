@@ -74,6 +74,27 @@ return [
         'plural_label' => 'Wallet Transactions',
         'total_amount' => 'Total Amount',   
     ],
+    'withdrawal' => [
+        'label' => 'Withdrawal',
+        'plural_label' => 'Withdrawals',
+        'total_amount' => 'Total Amount',
+    ],
+    'manual_notification' => [
+        'label' => 'Manual Notification',
+        'plural_label' => 'Manual Notifications',
+    ],
+    'visit' => [
+        'label' => 'Visit',
+        'plural_label' => 'Visits',
+    ],
+    'complaint' => [
+        'label' => 'Complaint',
+        'plural_label' => 'Complaints',
+    ],
+
+
+
+
     'user' => [
         'label' => 'User',
         'plural_label' => 'Users',
@@ -182,8 +203,12 @@ return [
         'total_amount' => 'Total Amount',
         'balance_after' => 'Balance After',
         'balance_before' => 'Balance Before',
-        'reference' => 'Reference',
+        'target_type' => 'Target Audience',
+        'title' => 'Title',
+        'message' => 'Message',
+        'services' => 'Services',
     ],
+
     'groups' => [
         'details' => 'Details',
         'financials' => 'Financials',
@@ -197,8 +222,12 @@ return [
             'users' => 'Access Control',
             'wallet' => 'Wallet',
             'financial' => 'Financial',
+            'visits' => 'Visits',
+            'support' => 'Support',
         ],
     ],
+
+
     'options' => [
         'all' => 'All',
         'offer' => 'Offer',
@@ -256,6 +285,12 @@ return [
             'payment' => 'Payment',
             'refund' => 'Refund',
         ],
+        'target_type' => [
+            'all' => 'All',
+            'specific' => 'Specific',
+            'all-users' => 'All Users',
+        ],
+
     ],
     'widgets' => [
         'total_users' => 'Total Users',

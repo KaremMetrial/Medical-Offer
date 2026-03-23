@@ -8,7 +8,8 @@ use App\Enums\{
     DiscountType,
     SectionType,
     RelationshipType,
-    WalletTransactionType
+    WalletTransactionType,
+    NotificationType
 };
 
 class EnumController extends BaseController
@@ -53,6 +54,13 @@ class EnumController extends BaseController
         return $this->successResponse([
             'label' => __('message.wallet_transaction_types'),
             'items' => WalletTransactionType::options()
+        ]);
+    }
+    public function notificationTypes()
+    {
+        return $this->successResponse([
+            'label' => __('message.notification_types'),
+            'items' => NotificationType::options()
         ]);
     }
 }
