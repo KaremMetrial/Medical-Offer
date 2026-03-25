@@ -28,5 +28,25 @@ class ReviewRepository extends BaseRepository implements ReviewRepositoryInterfa
             'status' => 'pending'
         ]));
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getAvgRatingByProviderId(int $providerId): float
+    {
+        return (float) ($this->model->where('provider_id', $providerId)->avg('rating') ?: 0);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRecentForProvider(int $providerId, int $limit = 5, array $relations = [])
+    {
+        return $this->model->with($relations)
+            ->where('provider_id', $providerId)
+            ->latest()
+            ->take($limit)
+            ->get();
+    }
 }
 

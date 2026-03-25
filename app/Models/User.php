@@ -38,6 +38,8 @@ class User extends Authenticatable implements MustVerifyEmail, FilamentUser
         'relationship',
         'is_active',
         'companion_status',
+        'member_id',
+        'qr_code',
     ];
 
     protected $hidden = [

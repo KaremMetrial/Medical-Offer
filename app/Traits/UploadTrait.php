@@ -12,7 +12,7 @@ trait UploadTrait
     /**
      * Get image validation rules.
      */
-    public function imageRules($required = false, $max = 2048)
+    public function imageRules($required = false, $max = 50480)
     {
         return [
             $required ? 'required' : 'nullable',

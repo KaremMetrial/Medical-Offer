@@ -24,4 +24,44 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         return $this->model->where('phone', $phone)->first();
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function findByCardCode(string $cardCode)
+    {
+        return $this->model->where('qr_code', $cardCode)
+            ->orWhere('member_id', $cardCode)
+            ->first();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDetails(int $id)
+    {
+        return $this->model->with([
+            'country',
+            'governorate.translations',
+            'city.translations',
+            'subscriptions.plan.translations'
+        ])
+        ->find($id);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDetailsByCardCode(string $cardCode)
+    {
+        return $this->model->with([
+            'country',
+            'governorate.translations',
+            'city.translations',
+            'subscriptions.plan.translations'
+        ])
+        ->where('qr_code', $cardCode)
+        ->orWhere('member_id', $cardCode)
+        ->first();
+    }
 }

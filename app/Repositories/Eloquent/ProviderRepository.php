@@ -97,4 +97,16 @@ class ProviderRepository extends BaseRepository implements ProviderRepositoryInt
         ->withMax('offers', 'discount_percent')
         ->findOrFail($id);
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getStats(int $id)
+    {
+        return $this->model
+            ->withAvg('reviews', 'rating')
+            ->withCount(['visits', 'reviews'])
+            ->withSum('visits', 'paid_amount')
+            ->findOrFail($id);
+    }
 }

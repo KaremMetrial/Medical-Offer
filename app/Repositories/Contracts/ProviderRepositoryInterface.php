@@ -55,4 +55,10 @@ interface ProviderRepositoryInterface extends BaseRepositoryInterface
     public function getProvidersByCategory(int $categoryId, $filters = [], int $perPage = 15);
     
     public function getDetails($id);
+
+    /**
+     * @param int $id
+     * @return \App\Models\Provider|null
+     */
+    public function getStats(int $id);
 }

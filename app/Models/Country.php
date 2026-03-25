@@ -102,6 +102,6 @@ class Country extends Model
         if($value == 0){
             return 1;
         }
-        return (int) $value;
+        return (float) $value;
     }
 }

@@ -9,7 +9,10 @@ use Illuminate\Support\Facades\DB;
 
 class CardRequestService
 {
-    public function __construct(protected CardRequestRepositoryInterface $repository){}
+    public function __construct(
+        protected CardRequestRepositoryInterface $repository,
+        protected CountryContext $countryContext
+    ){}
 
     /**
      * Get fees for membership card request.
@@ -22,11 +25,14 @@ class CardRequestService
         $issuanceFee = $hasRequestedBefore ? 50.00 : 0.00;
         $deliveryFee = 0.00; // Free delivery as requested
         
+        $country = $this->countryContext->getCountry() ?? $user->country;
+
         return [
             'issuance_fee' => $issuanceFee,
             'delivery_fee' => $deliveryFee,
             'total_amount' => $issuanceFee + $deliveryFee,
             'is_free' => !$hasRequestedBefore,
+            'currency_symbol' => $country?->currency_symbol ?? 'EGP',
         ];
     }
 

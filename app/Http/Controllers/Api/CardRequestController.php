@@ -60,6 +60,7 @@ class CardRequestController extends BaseController
             'qr_code' => "SUB-" . ($user->id ?? 0) . "-" . ($subscription?->id ?? 0),
             'card_title' => $subscription?->plan?->name ?? 'Default Plan',
             'card_color' => $this->getCardColor($subscription?->plan?->id),
+            'plan_label' => $subscription?->plan?->label ?? '',
         ];
     }
     protected function getCardColor($planId)

@@ -5,16 +5,11 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Auth\AuthenticationException;
-use Illuminate\Auth\Access\AuthorizationException;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
-use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
+use Illuminate\Auth\{AuthenticationException, Access\AuthorizationException};
+use Symfony\Component\HttpKernel\Exception\{NotFoundHttpException, MethodNotAllowedHttpException, AccessDeniedHttpException, TooManyRequestsHttpException};
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
-use App\Http\Middleware\SetLocaleMiddleware;
-use App\Http\Middleware\SetCountryMiddleware;
+use App\Http\Middleware\{SetLocaleMiddleware, SetCountryMiddleware, RoleMiddleware};
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,6 +22,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->api(prepend: [
             SetLocaleMiddleware::class,
             SetCountryMiddleware::class
+        ]);
+        $middleware->alias([
+            'role' => RoleMiddleware::class,
         ]);
         $middleware->redirectGuestsTo(function (Request $request) {
             if ($request->is('api/*')) {

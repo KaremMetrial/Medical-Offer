@@ -26,7 +26,8 @@ use App\Http\Controllers\Api\{
     WithdrawalController,
     NotificationController,
     VisitController,
-    ComplaintController
+    ComplaintController,
+    Provider\HomeController as ProviderHomeController
 };
 
 Route::prefix('v1')->group(function(){
@@ -92,10 +93,7 @@ Route::prefix('v1')->group(function(){
     Route::get('/countries', [CountryController::class, 'index']);
     Route::get('/cities', [CityController::class, 'index']);
 
-    Route::prefix('visits')->controller(VisitController::class)->name('visits.')->group(function () {
-        Route::get('/', 'index')->name('index');
-        Route::get('/{id}', 'show')->name('show');
-    });
+
 
     
     Route::get('/offers', [OfferController::class, 'index']);
@@ -110,6 +108,8 @@ Route::prefix('v1')->group(function(){
             Route::post('/add-companion', 'addCompanion')->name('add-companion');
             Route::post('/', 'subscribe')->name('subscribe');
             Route::get('/invoices', 'invoices')->name('invoices');
+            Route::get('/companions/{id}', 'showCompanion')->name('companions.show');
+            Route::get('/companions/{id}/status', 'companionActionStatus')->name('companions.status');
         });
 
         Route::prefix('favorites')->controller(FavoriteController::class)->name('favorites.')->group(function () {
@@ -149,6 +149,23 @@ Route::prefix('v1')->group(function(){
             Route::patch('/{id}/read', 'markAsRead');
             Route::post('/read-all', 'markAllAsRead');
             Route::delete('/{id}', 'destroy');
+        });
+
+        Route::prefix('visits')->controller(VisitController::class)->name('visits.')->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/{id}', 'show')->name('show');
+        });
+
+        Route::prefix('provider')->controller(ProviderHomeController::class)->middleware('role:provider')->name('provider.')->group(function () {
+            Route::get('/home', 'index')->name('index');
+            Route::get('/user-card/{card_code}', 'getUserByCard')->name('getUserByCard');
+            Route::get('/offers', 'offers')->name('offers');
+            
+            Route::prefix('visits')->name('visits.')->group(function () {
+                Route::get('/', 'visits')->name('index');
+                Route::post('/', 'registerVisit')->name('registerVisit');
+                Route::get('/{id}', 'showVisit')->name('showVisit');
+            });
         });
     });
 });

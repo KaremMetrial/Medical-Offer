@@ -12,11 +12,22 @@ class VisitController extends BaseController
     {
         $user = $request->user();
         
-        $query = Visit::with(['provider', 'companion'])
-            ->where('user_id', $user->id);
+        $query = Visit::with([
+            'provider' => function ($query) {
+                $query->withoutGlobalScopes()->with('translations');
+            }, 
+            'provider.country',
+            'companion'
+        ])
+            ->where(function($q) use ($user) {
+                $q->where('user_id', $user->id) 
+                  ->orWhere('companion_id', $user->id); 
+            });
 
         if ($request->has('companion_id')) {
-            $query->where('companion_id', $request->companion_id);
+            $query->where('companion_id', $request->companion_id)
+            ->orWhere('user_id', $request->companion_id);
+            
         } elseif ($request->boolean('only_companions')) {
             $query->whereNotNull('companion_id');
         } elseif ($request->boolean('only_mine')) {
@@ -32,7 +43,13 @@ class VisitController extends BaseController
 
     public function show($id)
     {
-        $visit = Visit::with(['provider', 'companion'])->findOrFail($id);
+        $visit = Visit::with([
+            'provider' => function ($query) {
+                $query->withoutGlobalScopes();
+            }, 
+            'provider.country',
+            'companion'
+        ])->findOrFail($id);
         
         return $this->successResponse(new VisitResource($visit));
     }

@@ -29,10 +29,10 @@ class UserResource extends JsonResource
             'nationality_id' => $this->nationality_id,
 
             // Optional: Include relations if loaded
-            'country'        => new JsonResource($this->whenLoaded('country')),
-            'governorate'    => new JsonResource($this->whenLoaded('governorate')),
-            'city'           => new JsonResource($this->whenLoaded('city')),
-            'nationality'    => new JsonResource($this->whenLoaded('nationality')),
+            'country'        => JsonResource::make($this->whenLoaded('country')),
+            'governorate'    => JsonResource::make($this->whenLoaded('governorate')),
+            'city'           => JsonResource::make($this->whenLoaded('city')),
+            'nationality'    => JsonResource::make($this->whenLoaded('nationality')),
 
             'created_at'     => $this->created_at?->format('Y-m-d'),
             'updated_at'     => $this->updated_at?->format('Y-m-d'),

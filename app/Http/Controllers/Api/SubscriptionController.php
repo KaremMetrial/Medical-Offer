@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Http\Resources\SubscriptionResource;
-use App\Http\Resources\InvoiceResource;
-use App\Http\Resources\CompanionResource;
+use App\Http\Resources\{SubscriptionResource, InvoiceResource, CompanionResource};
 use App\Repositories\Contracts\{
     SubscriptionRepositoryInterface,
     MemberPlanRepositoryInterface,
@@ -13,6 +11,7 @@ use App\Repositories\Contracts\{
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\CreateCompanion;
+use App\Enums\CompanionStatus;
 
 class SubscriptionController extends BaseController
 {
@@ -29,7 +28,7 @@ class SubscriptionController extends BaseController
      */
     public function index(Request $request): JsonResponse
     {
-        $user = $request->user()->load('children');
+        $user = $request->user()->load('children.attachments');
         $subscription = $user->currentSubscription();
 
         return $this->successResponse([
@@ -213,6 +212,12 @@ class SubscriptionController extends BaseController
             'payment_status' => $paymentStatus,
         ]);
 
+        // Save member_id and qr_code to user
+        $user->update([
+            'member_id' => 'GM-' . str_pad($user->id, 4, '0', STR_PAD_LEFT) . '-' . str_pad($subscription->id, 4, '0', STR_PAD_LEFT),
+            'qr_code' => "SUB-" . $user->id . "-" . $subscription->id,
+        ]);
+
         // 4. Create Payment Record if success
         if ($paymentResult['transaction_id']) {
             \App\Models\Payment::create([
@@ -229,7 +234,7 @@ class SubscriptionController extends BaseController
             'subscription' => new SubscriptionResource($subscription),
             'message' => $paymentResult['message'],
             'redirect_url' => $paymentResult['redirect_url'] ?? null,
-        ]);
+        ], __('message.subscribed_successfully'));
     }
 
     public function addCompanion(CreateCompanion $request): JsonResponse
@@ -244,18 +249,41 @@ class SubscriptionController extends BaseController
 
         if ($request->has('attachments')) {
             foreach ($request->attachments as $attachmentData) {
-                $path = $attachmentData['file']->store('users/attachments', 'public');
+                $path = $attachmentData->store('users/attachments', 'public');
                 $companion->attachments()->create([
                     'path' => $path,
-                    'type' => $attachmentData['type'],
-                    'file_type' => $attachmentData['file']->getClientOriginalExtension(),
+                    'file_type' => $attachmentData->getClientOriginalExtension(),
                 ]);
             }
+            $companion->load('attachments');
         }
 
         return $this->successResponse([
             'companion' => new CompanionResource($companion),
             'message' => __('message.companion_added_successfully'),
+        ]);
+    }
+    public function showCompanion($id): JsonResponse
+    {
+        $companion = $this->userRepository->findOrFail($id, ['*'], ['attachments']);
+        return $this->successResponse([
+            'companion' => new CompanionResource($companion),
+        ]);
+    }
+    public function companionActionStatus($id, Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:delete,pending',
+        ]);
+        $companion = $this->userRepository->findOrFail($id, ['*'], ['attachments']);
+        if($validated['action'] == 'delete') {
+            $companion->parent_user_id = null;
+        } else {
+            $companion->companion_status = CompanionStatus::PENDING;
+        }
+        $companion->save();
+        return $this->successResponse([
+            'companion' => new CompanionResource($companion),
         ]);
     }
 }

@@ -28,6 +28,7 @@ return [
         \App\Repositories\Contracts\CardRequestRepositoryInterface::class => \App\Repositories\Eloquent\CardRequestRepository::class,
         \App\Repositories\Contracts\WalletTransactionRepositoryInterface::class => \App\Repositories\Eloquent\WalletTransactionRepository::class,
         \App\Repositories\Contracts\WithdrawalRepositoryInterface::class => \App\Repositories\Eloquent\WithdrawalRepository::class,
+        \App\Repositories\Contracts\VisitRepositoryInterface::class => \App\Repositories\Eloquent\VisitRepository::class,
     ],
 
     /*

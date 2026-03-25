@@ -42,4 +42,44 @@ class OfferRepository extends BaseRepository implements OfferRepositoryInterface
             ->select($columns)
             ->get();
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function findInIds(array $ids)
+    {
+        return $this->model->whereIn('id', $ids)->get();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getPaginatedForProvider(int $providerId, int $perPage = 15, ?string $search = null)
+    {
+        $query = $this->model->where('provider_id', $providerId)->latest();
+
+        if ($search) {
+            $query->whereHas('translations', function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
+        return $query->paginate($perPage);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getTopOffers(int $providerId, int $limit = 3)
+    {
+        return $this->model->with(['translations'])
+            ->where('provider_id', $providerId)
+            ->where('status', 'published')
+            ->withCount('reviews')
+            ->orderByDesc('reviews_count')
+            ->latest()
+            ->take($limit)
+            ->get();
+    }
 }

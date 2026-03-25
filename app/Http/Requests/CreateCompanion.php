@@ -38,8 +38,7 @@ class CreateCompanion extends FormRequest
             'phone' => 'required|string|regex:/^([0-9\s\-\+\(\)]*)$/|unique:users,phone',
             'relationship' => 'required|in:' . implode(',', \App\Enums\RelationshipType::values()),
             'attachments' => 'nullable|array',
-            'attachments.*.file' => $this->imageRules(),
-            'attachments.*.type' => 'required|string|max:50',
+            'attachments.*' => $this->imageRules(),
         ];
     }
 

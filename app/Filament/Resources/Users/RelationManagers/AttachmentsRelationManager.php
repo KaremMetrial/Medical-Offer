@@ -2,13 +2,10 @@
 
 namespace App\Filament\Resources\Users\RelationManagers;
 
-use Filament\Actions\AssociateAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DissociateAction;
-use Filament\Actions\DissociateBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
@@ -35,6 +32,8 @@ class AttachmentsRelationManager extends RelationManager
     {
         return $schema
             ->components([
+                \Filament\Forms\Components\Hidden::make('attachable_id'),
+                \Filament\Forms\Components\Hidden::make('attachable_type'),
                 \Filament\Forms\Components\FileUpload::make('path')
                     ->label(__('filament.fields.file'))
                     ->disk('public')
@@ -105,17 +104,14 @@ class AttachmentsRelationManager extends RelationManager
             ])
             ->headerActions([
                 CreateAction::make(),
-                AssociateAction::make(),
             ])
             ->recordActions([
                 ViewAction::make(),
                 EditAction::make(),
-                DissociateAction::make(),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DissociateBulkAction::make(),
                     DeleteBulkAction::make(),
                 ]),
             ]);

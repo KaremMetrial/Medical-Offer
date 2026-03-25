@@ -156,6 +156,11 @@ class Provider extends Model
     {
         return $this->hasMany(Review::class);
     }
+
+    public function visits()
+    {
+        return $this->hasMany(Visit::class);
+    }
     public function scopeSearchName($query, $search)
     {
         return $query->whereHas('translations', function ($q) use ($search) {
