@@ -40,7 +40,7 @@ Route::prefix('v1')->group(function(){
         Route::get('/', 'index')->name('index');
         Route::get('/{id}', 'show')->name('show');
     });
-    
+
     Route::prefix('auth')->controller(AuthController::class)->name('auth.')->group(function () {
         // Standard rate limit for OTP sending: 6 times per minute per IP
         Route::post('/send-otp', 'sendOtp')->middleware('throttle:6,1')->name('sendOtp');
@@ -89,13 +89,13 @@ Route::prefix('v1')->group(function(){
         Route::get('/by-provider/{providerId}', 'getReviewsByProviderId')->name('byProvider');
     });
 
-    Route::get('/governorates', [GovernorateController::class, 'index']);    
+    Route::get('/governorates', [GovernorateController::class, 'index']);
     Route::get('/countries', [CountryController::class, 'index']);
     Route::get('/cities', [CityController::class, 'index']);
 
 
 
-    
+
     Route::get('/offers', [OfferController::class, 'index']);
     Route::get('/offers/{id}', [OfferController::class, 'show']);
     Route::post('/complaints', [ComplaintController::class, 'store'])->name('complaints.store');
@@ -109,7 +109,7 @@ Route::prefix('v1')->group(function(){
             Route::post('/', 'subscribe')->name('subscribe');
             Route::get('/invoices', 'invoices')->name('invoices');
             Route::get('/companions/{id}', 'showCompanion')->name('companions.show');
-            Route::get('/companions/{id}/status', 'companionActionStatus')->name('companions.status');
+            Route::post('/companions/{id}/status', 'companionActionStatus')->name('companions.status');
         });
 
         Route::prefix('favorites')->controller(FavoriteController::class)->name('favorites.')->group(function () {
@@ -160,7 +160,7 @@ Route::prefix('v1')->group(function(){
             Route::get('/home', 'index')->name('index');
             Route::get('/user-card/{card_code}', 'getUserByCard')->name('getUserByCard');
             Route::get('/offers', 'offers')->name('offers');
-            
+
             Route::prefix('visits')->name('visits.')->group(function () {
                 Route::get('/', 'visits')->name('index');
                 Route::post('/', 'registerVisit')->name('registerVisit');

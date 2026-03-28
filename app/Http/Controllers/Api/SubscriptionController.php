@@ -136,11 +136,11 @@ class SubscriptionController extends BaseController
     {
         $user = $request->user();
         $subscription = $user->currentSubscription();
-        
+
         $countryId = $request->get('country_id');
         $currentPlanId = $subscription ? $subscription->plan_id : null;
         $plans = $this->memberPlanRepository->getActivePlans($countryId);
-        
+
         // Filter out current plan and format available plans
         $availablePlans = $plans->where('id', '!=', $currentPlanId);
 
@@ -244,7 +244,7 @@ class SubscriptionController extends BaseController
         $validated['parent_user_id'] = $user->id;
         $validated['role'] = 'user';
         $validated['is_active'] = true;
-        
+
         $companion = $this->userRepository->create($validated);
 
         if ($request->has('attachments')) {
