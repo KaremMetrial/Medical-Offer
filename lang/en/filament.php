@@ -207,6 +207,10 @@ return [
         'title' => 'Title',
         'message' => 'Message',
         'services' => 'Services',
+        'contact_email' => 'Contact Email',
+        'contact_phone' => 'Contact Phone',
+        'contact_whatsapp' => 'Contact WhatsApp',
+        'contact_title' => 'Contact Title',
     ],
 
     'groups' => [
@@ -224,10 +228,14 @@ return [
             'financial' => 'Financial',
             'visits' => 'Visits',
             'support' => 'Support',
+            'settings' => 'General Settings',
         ],
+        'contact_settings' => 'Contact Us Settings',
     ],
 
-
+    'actions' => [
+        'save' => 'Save',
+    ],
     'options' => [
         'all' => 'All',
         'offer' => 'Offer',
@@ -303,5 +311,8 @@ return [
         'users_by_country' => 'Users by Country Distribution',
         'total_users_desc' => 'Total registered users',
         'total_revenue_desc' => 'Total revenue in EGP',
+    ],
+    'notifications' => [
+        'saved' => 'Settings saved successfully',
     ],
 ];

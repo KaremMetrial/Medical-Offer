@@ -213,6 +213,10 @@ return [
         'title' => 'العنوان',
         'message' => 'الرسالة',
         'services' => 'الخدمات',
+        'contact_email' => 'البريد الإلكتروني للتواصل',
+        'contact_phone' => 'هاتف التواصل',
+        'contact_whatsapp' => 'واتساب التواصل',
+        'contact_title' => 'عنوان التواصل',
     ],
 
     'groups' => [
@@ -230,10 +234,14 @@ return [
             'financial' => 'المالية',
             'visits' => 'الزيارات',
             'support' => 'الدعم الفني',
+            'settings' => 'الإعدادات العامة',
         ],
+        'contact_settings' => 'إعدادات اتصل بنا',
     ],
 
-
+    'actions' => [
+        'save' => 'حفظ',
+    ],
     'options' => [
         'all' => 'الكل',
         'offer' => 'عرض',
@@ -309,5 +317,8 @@ return [
         'users_by_country' => 'توزيع المستخدمين حسب الدولة',
         'total_users_desc' => 'إجمالي المستخدمين المسجلين',
         'total_revenue_desc' => 'إجمالي الإيرادات بالجنيه المصري',
+    ],
+    'notifications' => [
+        'saved' => 'تم حفظ الإعدادات بنجاح',
     ],
 ];

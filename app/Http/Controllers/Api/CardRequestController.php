@@ -101,6 +101,7 @@ class CardRequestController extends BaseController
         return $this->successResponse([
             'card_info' => $this->getInfoCard($request->user(), $request->user()->currentSubscription()),
             'card_request' => new CardRequestResource($latestRequest),
+            'statuses' => \App\Enums\CardRequestStatus::options(),
             'labels' => [
                 'card_info' => __('message.card_info'),
                 'card_request' => __('message.card_request'),
@@ -111,7 +112,9 @@ class CardRequestController extends BaseController
                 'total_amount' => __('message.total_amount'),
                 'created_at' => __('message.created_at'),
                 'status' => __('message.status'),
+                'fees' => __('message.fees'),
             ],
         ]);
+
     }
 }

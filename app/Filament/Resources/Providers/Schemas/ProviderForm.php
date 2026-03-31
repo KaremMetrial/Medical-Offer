@@ -14,6 +14,7 @@ use App\Filament\Components\TranslatableFields;
 use App\Models\Category;
 use App\Models\Country;
 use App\Models\Section as SectionDB;
+use App\Models\User;
 use App\Traits\UploadTrait;
 
 class ProviderForm
@@ -77,6 +78,14 @@ class ProviderForm
                                 ->options(fn() => Category::all()->pluck('name', 'id'))
                                 ->multiple()
                                 ->preload(),
+                            Select::make('users')
+                                ->label(__('filament.user.plural_label'))
+                                ->options(fn() => User::where('role', 'provider')->get()->pluck('name', 'id'))
+                                ->relationship('users', 'id')
+                                ->getOptionLabelFromRecordUsing(fn($record) => $record->name)
+                                ->multiple()
+                                ->preload()
+                                ->searchable(),
                         ])->columns(2),
                 ])->columnSpan(3),
 

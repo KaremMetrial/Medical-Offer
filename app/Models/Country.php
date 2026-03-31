@@ -17,7 +17,10 @@ class Country extends Model
         'currency_factor',
         'flag',
         'timezone',
-        'is_active'
+        'is_active',
+        'contact_email',
+        'contact_phone',
+        'contact_whatsapp'
     ];
 
     protected $casts = [

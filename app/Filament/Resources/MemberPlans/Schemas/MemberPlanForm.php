@@ -34,7 +34,7 @@ class MemberPlanForm
                                     'overrides' => fn($component) => $component->columnSpanFull(),
                                 ],
                                 'feature' => [
-                                    'type' => 'markdown_editor',
+                                    'type' => 'tags',
                                     'label' => __('filament.fields.features'),
                                     'overrides' => fn($component) => $component->columnSpanFull(),
                                 ],

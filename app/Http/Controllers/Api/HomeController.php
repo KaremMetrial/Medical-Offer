@@ -46,7 +46,7 @@ class HomeController extends BaseController
         $locale = app()->getLocale();
 
         // Cache non-user-specific data for 30 minutes
-        $sharedData = Cache::remember("home_shared_data_{$locale}_v5", now()->addMinutes(30), function () {
+        $sharedData = Cache::remember("home_shared_data_{$locale}_v6", now()->addMinutes(30), function () {
             $sectionsAndFeatured = $this->getSectionsAndFeaturedData();
             
             return [

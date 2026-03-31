@@ -4,8 +4,16 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\JsonResponse;
 
+use App\Repositories\Contracts\CountryRepositoryInterface;
+use App\Models\Country;
+use Illuminate\Http\Request;
+
 class PageController extends BaseController
 {
+    public function __construct(
+        protected CountryRepositoryInterface $countryRepository
+    ) {}
+
     /**
      * Get General FAQs.
      */
@@ -30,11 +38,30 @@ class PageController extends BaseController
     }
 
     /**
-
      * Get Contact Us Information.
      */
-    public function contactUs(): JsonResponse
+    public function contactUs(Request $request): JsonResponse
     {
+        $user = auth('sanctum')->user();
+        $country = null;
+
+        if ($user) {
+            $country = $user->country;
+        }
+
+        if (!$country) {
+            $country = $this->countryRepository->getDefaultCountry();
+        }
+
+        if ($country) {
+            return $this->successResponse([
+                'title' => $country->translation()?->contact_title ?? __('pages.contact_us.title'),
+                'email' => $country->contact_email ?? __('pages.contact_us.email'),
+                'phone' => $country->contact_phone ?? __('pages.contact_us.phone'),
+                'whatsapp' => $country->contact_whatsapp ?? __('pages.contact_us.whatsapp'),
+            ]);
+        }
+
         return $this->successResponse([
             'title' => __('pages.contact_us.title'),
             'email' => __('pages.contact_us.email'),

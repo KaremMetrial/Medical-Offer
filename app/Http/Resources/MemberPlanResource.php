@@ -8,6 +8,10 @@ class MemberPlanResource extends JsonResource
 {
     public function toArray($request)
     {
+        if (!$this->resource) {
+            return [];
+        }
+
         $countryRepo = app(\App\Repositories\Contracts\CountryRepositoryInterface::class);
         $currencyService = app(\App\Services\CurrencyService::class);
         $user = $request->user();

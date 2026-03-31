@@ -12,6 +12,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\CreateCompanion;
 use App\Enums\CompanionStatus;
+use App\Services\SubscriptionService;
+use Illuminate\Support\Facades\DB;
+
 
 class SubscriptionController extends BaseController
 {
@@ -19,9 +22,11 @@ class SubscriptionController extends BaseController
     public function __construct(
         protected SubscriptionRepositoryInterface $subscriptionRepository,
         protected MemberPlanRepositoryInterface $memberPlanRepository,
-        protected UserRepositoryInterface $userRepository
+        protected UserRepositoryInterface $userRepository,
+        protected SubscriptionService $subscriptionService
     ) {
     }
+
 
     /**
      * Get user's active subscription dashboard data.
@@ -176,9 +181,6 @@ class SubscriptionController extends BaseController
         ]);
     }
 
-    /**
-     * Subscribe to a plan.
-     */
     public function subscribe(Request $request): JsonResponse
     {
         $request->validate([
@@ -186,56 +188,44 @@ class SubscriptionController extends BaseController
             'payment_method' => 'required|in:' . implode(',', \App\Enums\PaymentMethod::values()),
         ]);
 
-        $user = $request->user();
-        $plan = \App\Models\MemberPlan::findOrFail($request->plan_id);
-        $method = \App\Enums\PaymentMethod::from($request->payment_method);
+        return DB::transaction(function () use ($request) {
+            $user = $request->user();
+            $plan = \App\Models\MemberPlan::findOrFail($request->plan_id);
+            $method = \App\Enums\PaymentMethod::from($request->payment_method);
 
-        // 1. Get Payment Strategy
-        $paymentStrategy = \App\Services\Payments\PaymentFactory::make($method);
+            // 1. Get Payment Strategy
+            $paymentStrategy = \App\Services\Payments\PaymentFactory::make($method);
 
-        // 2. Process Payment (Check balance happens inside Wallet strategy)
-        $paymentResult = $paymentStrategy->process($user, $plan);
-
-        if (!$paymentResult['success']) {
-            return $this->errorResponse($paymentResult['message'], 400);
-        }
-
-        // 3. Create Subscription
-        // If wallet, it's already "paid" and "active"
-        $status = ($method === \App\Enums\PaymentMethod::WALLET) ? 'active' : 'pending';
-        $paymentStatus = ($method === \App\Enums\PaymentMethod::WALLET) ? 'paid' : 'unpaid';
-
-        $subscription = $this->subscriptionRepository->createSubscription([
-            'user_id' => $user->id,
-            'plan_id' => $plan->id,
-            'status' => $status,
-            'payment_status' => $paymentStatus,
-        ]);
-
-        // Save member_id and qr_code to user
-        $user->update([
-            'member_id' => 'GM-' . str_pad($user->id, 4, '0', STR_PAD_LEFT) . '-' . str_pad($subscription->id, 4, '0', STR_PAD_LEFT),
-            'qr_code' => "SUB-" . $user->id . "-" . $subscription->id,
-        ]);
-
-        // 4. Create Payment Record if success
-        if ($paymentResult['transaction_id']) {
-            \App\Models\Payment::create([
-                'payable_type' => \App\Models\Subscription::class,
-                'payable_id' => $subscription->id,
-                'amount' => $paymentResult['deducted_amount'] ?? $plan->price,
-                'method' => $method->value,
-                'provider_ref' => $paymentResult['transaction_id'],
-                'status' => 'paid',
+            // 2. Process Payment (Strategy handles the initiation)
+            $paymentResult = $paymentStrategy->process($user, $plan, [
+                'plan_id' => $plan->id
             ]);
-        }
 
-        return $this->successResponse([
-            'subscription' => new SubscriptionResource($subscription),
-            'message' => $paymentResult['message'],
-            'redirect_url' => $paymentResult['redirect_url'] ?? null,
-        ], __('message.subscribed_successfully'));
+            if (!$paymentResult['success']) {
+                return $this->errorResponse($paymentResult['message'], 400);
+            }
+
+            $subscription = null;
+
+            // 3. Handle Wallet Success (Synchronous Fulfillment)
+            if ($method === \App\Enums\PaymentMethod::WALLET) {
+                $subscription = $this->subscriptionService->fulfillSubscription(
+                    $user,
+                    $plan,
+                    $method->value,
+                    $paymentResult['transaction_id'],
+                    $paymentResult['deducted_amount'] ?? $plan->price
+                );
+            }
+
+            return $this->successResponse([
+                'subscription' => $subscription ? new SubscriptionResource($subscription) : null,
+                'redirect_url' => $paymentResult['redirect_url'] ?? null,
+            ], $paymentResult['message']);
+        });
     }
+
+
 
     public function addCompanion(CreateCompanion $request): JsonResponse
     {

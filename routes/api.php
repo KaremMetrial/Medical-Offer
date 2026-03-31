@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Resources\UserResource;
+use App\Http\Controllers\MyFatoorahController;
+
 use App\Http\Controllers\Api\{
     Auth\AuthController,
     HomeController,
@@ -30,7 +32,7 @@ use App\Http\Controllers\Api\{
     Provider\HomeController as ProviderHomeController
 };
 
-Route::prefix('v1')->group(function(){
+Route::prefix('v1')->group(function () {
     Route::get('/faqs', [PageController::class, 'faqs']);
     Route::get('/terms', [PageController::class, 'terms']);
     Route::get('/contact-us', [PageController::class, 'contactUs']);
@@ -136,7 +138,9 @@ Route::prefix('v1')->group(function(){
         Route::prefix('wallet')->controller(WalletController::class)->group(function () {
             Route::get('/', 'index');
             Route::get('/transactions', 'transactions');
+            Route::post('/topup', 'topup');
         });
+
 
         Route::prefix('withdrawals')->controller(WithdrawalController::class)->group(function () {
             Route::get('/', 'index');
@@ -168,5 +172,15 @@ Route::prefix('v1')->group(function(){
             });
         });
     });
-});
 
+    Route::prefix('myfatoorah')->group(function () {
+        Route::get('index', [\App\Http\Controllers\MyFatoorahController::class, 'index'])->name('myfatoorah.index');
+        Route::get('gateway', [\App\Http\Controllers\MyFatoorahController::class, 'gateway'])->name('myfatoorah.gateway');
+        Route::get('process', [\App\Http\Controllers\MyFatoorahController::class, 'process'])->name('myfatoorah.process');
+        Route::get('callback', [\App\Http\Controllers\MyFatoorahController::class, 'callback'])->name('myfatoorah.callback');
+        Route::get('success', [\App\Http\Controllers\MyFatoorahController::class, 'success'])->name('myfatoorah.success');
+        Route::get('error', [\App\Http\Controllers\MyFatoorahController::class, 'error'])->name('myfatoorah.error');
+        Route::post('webhook', [\App\Http\Controllers\MyFatoorahController::class, 'webhook'])->middleware('myfatoorah.webhook')->name('myfatoorah.webhook');
+        Route::get('status-poll/{subscription_id}', [\App\Http\Controllers\MyFatoorahController::class, 'statusPoll'])->name('myfatoorah.status-poll');
+    });
+});

@@ -12,7 +12,8 @@ class CountryTranslation extends Model
     protected $fillable = [
         'country_id',
         'local',
-        'name'
+        'name',
+        'contact_title'
     ];
 
     protected $casts = [

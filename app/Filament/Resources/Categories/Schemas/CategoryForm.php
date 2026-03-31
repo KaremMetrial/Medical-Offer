@@ -50,6 +50,7 @@ class CategoryForm
                             ->options(
                                 fn(?Category $record) => Category::query()
                                     ->when($record, fn($query) => $query->where('id', '!=', $record->id))
+                                    ->get()
                                     ->pluck('name', 'id')
                             )
                             ->searchable()

@@ -9,7 +9,7 @@ use Illuminate\Auth\{AuthenticationException, Access\AuthorizationException};
 use Symfony\Component\HttpKernel\Exception\{NotFoundHttpException, MethodNotAllowedHttpException, AccessDeniedHttpException, TooManyRequestsHttpException};
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Database\QueryException;
-use App\Http\Middleware\{SetLocaleMiddleware, SetCountryMiddleware, RoleMiddleware};
+use App\Http\Middleware\{SetLocaleMiddleware, SetCountryMiddleware, RoleMiddleware, VerifyMyFatoorahWebhook};
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,9 +23,14 @@ return Application::configure(basePath: dirname(__DIR__))
             SetLocaleMiddleware::class,
             SetCountryMiddleware::class
         ]);
+        $middleware->validateCsrfTokens(except: [
+            'api/v1/myfatoorah/webhook'
+        ]);
         $middleware->alias([
             'role' => RoleMiddleware::class,
+            'myfatoorah.webhook' => VerifyMyFatoorahWebhook::class,
         ]);
+
         $middleware->redirectGuestsTo(function (Request $request) {
             if ($request->is('api/*')) {
                 return response()->json([
@@ -129,4 +134,6 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withSchedule(function (\Illuminate\Console\Scheduling\Schedule $schedule) {
         $schedule->command('app:update-currency-rates')->daily();
+        $schedule->command('subscriptions:cleanup-pending')->everyFifteenMinutes();
     })->create();
+

@@ -16,7 +16,7 @@ class ProvidersTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn(Builder $query) => $query->with(['translations', 'country.translations']))
+            ->modifyQueryUsing(fn(Builder $query) => $query->with(['translations', 'country.translations', 'users']))
             ->columns([
                 TextColumn::make('name')
                     ->label(__('filament.fields.name'))
@@ -57,6 +57,11 @@ class ProvidersTable
                 IconColumn::make('is_varified')
                     ->label(__('filament.fields.is_varified'))
                     ->boolean(),
+
+                TextColumn::make('users.name')
+                    ->label(__('filament.user.plural_label'))
+                    ->badge()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('views')
                     ->label(__('filament.fields.views'))

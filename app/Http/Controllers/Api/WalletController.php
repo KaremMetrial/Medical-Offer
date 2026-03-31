@@ -55,4 +55,25 @@ class WalletController extends BaseController
             ],
         ]);
     }
+
+    /**
+     * Initiate a wallet top-up.
+     */
+    public function topup(Request $request): JsonResponse
+    {
+        $request->validate([
+            'amount' => 'required|numeric|min:1',
+        ]);
+
+        try {
+            $result = $this->walletService->initiateTopUp($request->user(), $request->amount);
+
+            return $this->successResponse([
+                'redirect_url' => $result['redirect_url'],
+                'transaction_id' => $result['transaction_id']
+            ],__('message.wallet.redirect_topup'));
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage());
+        }
+    }
 }

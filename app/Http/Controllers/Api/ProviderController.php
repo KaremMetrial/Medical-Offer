@@ -115,6 +115,7 @@ class ProviderController extends BaseController
         $providers = $this->providerRepository->getProvidersByCategory($categoryId, new ProviderFilter($request), 15);
         return $this->successResponse([
             'title' => $category->parent?->name,
+            'type' => $category->parent?->section?->type ?? $category->section?->type,
             'sub_title' => $category->name,
             'providers' => ProviderResource::collection($providers),
             'pagination' => new PaginationResource($providers),

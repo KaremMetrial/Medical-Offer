@@ -16,9 +16,10 @@ class PaymentFactory
         $methodValue = $method instanceof PaymentMethod ? $method->value : $method;
 
         return match ($methodValue) {
-            PaymentMethod::WALLET->value => new WalletPaymentStrategy(),
-            PaymentMethod::ONLINE->value => new OnlinePaymentStrategy(),
+            PaymentMethod::WALLET->value => app(WalletPaymentStrategy::class),
+            PaymentMethod::ONLINE->value => app(OnlinePaymentStrategy::class),
             default => throw new InvalidArgumentException("Payment method [{$methodValue}] is not supported."),
         };
+
     }
 }

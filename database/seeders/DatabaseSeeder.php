@@ -16,7 +16,10 @@ class DatabaseSeeder extends Seeder
         $this->call(GovernorateSeeder::class);
         $this->call(CitySeeder::class);
 
-        // Seed categories (independent)
+        // Seed sections (foundation data for Categories and Providers)
+        $this->call(SectionSeeder::class);
+
+        // Seed categories (depends on sections)
         $this->call(CategorySeeder::class);
 
         // Seed member plans (independent)
@@ -24,6 +27,9 @@ class DatabaseSeeder extends Seeder
 
         // Seed users (independent)
         $this->call(UserSeeder::class);
+
+        // Seed companions (depends on users)
+        $this->call(CompanionSeeder::class);
 
         // Seed providers (depends on countries, cities)
         $this->call(ProviderSeeder::class);
@@ -34,11 +40,15 @@ class DatabaseSeeder extends Seeder
         // Seed banners (depends on offers, providers, categories)
         $this->call(BannerSeeder::class);
 
+        // Seed stories (linked to providers)
+        $this->call(StorySeeder::class);
+
         // Seed user-provider relationships (depends on users and providers)
         $this->call(UserProviderSeeder::class);
 
-        // Note: Favorites, Reviews, OfferViews, and Payments are not seeded
-        // as they represent user-generated content and should be created
-        // through the application's normal workflow
+        // Seed visits, reviews, and invoices (payments)
+        $this->call(VisitSeeder::class);
+        $this->call(ReviewSeeder::class);
+        $this->call(InvoiceSeeder::class);
     }
 }

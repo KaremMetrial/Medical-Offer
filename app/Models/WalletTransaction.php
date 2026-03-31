@@ -11,18 +11,25 @@ class WalletTransaction extends Model
 
     protected $fillable = [
         'user_id',
-        'type',
+        'type', // credit, debit, deposit, withdraw
+        'status', // pending, success, failed
         'amount',
         'balance_after',
         'description',
         'reference',
+        'provider_ref',
+        'metadata',
     ];
 
     protected $casts = [
         'amount' => 'decimal:2',
         'balance_after' => 'decimal:2',
         'type' => \App\Enums\WalletTransactionType::class,
+        'status' => \App\Enums\WalletTransactionStatus::class,
+        'metadata' => 'array',
     ];
+
+
 
     public function user()
     {

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class WalletPaymentStrategy implements PaymentStrategyInterface
 {
-    public function process(User $user, MemberPlan $plan): array
+    public function process(User $user, MemberPlan $plan, array $options = []): array
     {
         $currencyService = app(\App\Services\CurrencyService::class);
         $systemBaseCurrency = config('settings.currency.system_base', 'USD');
